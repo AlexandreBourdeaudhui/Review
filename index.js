@@ -15,7 +15,7 @@ import PULL_REQUEST_STATE from "./constants.js";
  * Init
  */
 const octokit = new Octokit({
-  auth: "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",
+  auth: "",
 });
 
 // Use JSON file for storage
