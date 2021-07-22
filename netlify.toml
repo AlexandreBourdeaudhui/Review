@@ -1,0 +1,18 @@
+[build]
+command = "npm i"
+functions = "src/functions/"
+
+[[redirects]]
+from = "/"
+status = 200
+to = "/.netlify/functions/index"
+
+[[redirects]]
+from = "/list"
+status = 200
+to = "/.netlify/functions/list"
+
+[[redirects]]
+from = "/set"
+status = 200
+to = "/.netlify/functions/set"
