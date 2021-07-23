@@ -24,7 +24,7 @@ const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
  * @param {Number} pull_number
  * @return
  */
-const getPullRequestReviews = async ({
+const getPullRequestHasReviews = async ({
   owner,
   repo,
   pull_number,
@@ -38,24 +38,15 @@ const getPullRequestReviews = async ({
     {
       owner,
       repo,
-      pull_number: pull_number,
+      pull_number,
     },
   );
 
-  if (
-    !data.some(
-      (pullRequest) =>
-        pullRequest.state === PULL_REQUEST_STATE.APPROVED ||
-        pullRequest.state === PULL_REQUEST_STATE.DENIED,
-    )
-  ) {
-    return {
-      owner,
-      repo,
-      pull_number,
-      state: PULL_REQUEST_STATE.REVIEW,
-    };
-  }
+  return data.some(
+    (pullRequest) =>
+      pullRequest.state === PULL_REQUEST_STATE.APPROVED ||
+      pullRequest.state === PULL_REQUEST_STATE.DENIED,
+  );
 };
 
 /**
@@ -79,22 +70,20 @@ const getPullRequests = async ({
     state: 'open',
   });
 
-  //
-  const pullRequests = data
-    .filter((pullRequest) => !pullRequest.draft)
-    .map(({ number }) =>
-      getPullRequestReviews({
-        owner,
-        repo,
-        pull_number: number,
-      }),
-    );
+  const pullRequestsToReview = data.map((pullRequest) => {
+    const isDraft = pullRequest.draft;
+    const hasReview = getPullRequestHasReviews({
+      owner,
+      repo,
+      pull_number: pullRequest.number,
+    });
 
-  //
-  const pullRequestsReview = await Promise.all(pullRequests);
-  console.log({ pullRequestsReview });
+    if (!isDraft && !hasReview) {
+      return pullRequest;
+    }
+  });
 
-  return pullRequestsReview;
+  return Promise.all(pullRequestsToReview);
 };
 
 /**
@@ -114,7 +103,15 @@ const handler: Handler = async (event, context) => {
       const [owner, repo] = repository.split('/');
 
       if (owner && repo) {
-        const pullRequests = getPullRequests({ owner, repo });
+        const pullRequests = await getPullRequests({ owner, repo });
+
+        if (pullRequests.length) {
+          console.log(`
+            Pour le projet suivant ${owner}/${repo},
+            Voici les pull-requets qui nécéssitent une review : 
+            ${pullRequests[0].title} — ${pullRequests[0].html_url}
+          `);
+        }
       }
     }
 
