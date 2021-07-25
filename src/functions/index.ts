@@ -1,6 +1,7 @@
 /*
  * Package Import
  */
+import queryString from 'querystring';
 import { Octokit } from '@octokit/core';
 import { Handler } from '@netlify/functions';
 
@@ -8,7 +9,10 @@ import { Handler } from '@netlify/functions';
  * Local Import
  */
 import { PULL_REQUEST_STATE } from '../constants/index';
+
+// Helpers
 import initializeDatabase from '../utils/database';
+import { slackWrapper } from '../utils/slack';
 
 /*
  * Init
@@ -70,20 +74,39 @@ const getPullRequests = async ({
     state: 'open',
   });
 
-  const pullRequestsToReview = data.map((pullRequest) => {
-    const isDraft = pullRequest.draft;
-    const hasReview = getPullRequestHasReviews({
-      owner,
-      repo,
-      pull_number: pullRequest.number,
-    });
+  const pullRequestsReview = await Promise.all(
+    data.map(async (pullRequest) => {
+      const isDraft = pullRequest.draft;
+      const alreadyHasReview = await getPullRequestHasReviews({
+        owner,
+        repo,
+        pull_number: pullRequest.number,
+      });
 
-    if (!isDraft && !hasReview) {
-      return pullRequest;
-    }
-  });
+      if (!isDraft && !alreadyHasReview) {
+        return pullRequest;
+      }
+    }),
+  );
 
-  return Promise.all(pullRequestsToReview);
+  const pullRequestsReviewFiltered = pullRequestsReview.filter(Boolean);
+  return pullRequestsReviewFiltered;
+};
+
+/**
+ *
+ * @param title
+ * @param html_url
+ * @returns
+ */
+const formatMessage = ({
+  title,
+  html_url,
+}: {
+  title: string;
+  html_url: string;
+}): string => {
+  return `[${title}](${html_url})`;
 };
 
 /**
@@ -96,22 +119,38 @@ const handler: Handler = async (event, context) => {
   try {
     // Init
     const db = await initializeDatabase();
-    const pullRequestsNeedReviews = [];
+    const payload = queryString.parse(event.body);
 
     //
     for (const repository of db.data.repositories) {
       const [owner, repo] = repository.split('/');
 
       if (owner && repo) {
-        const pullRequests = await getPullRequests({ owner, repo });
+        const pullRequestsReviews = await getPullRequests({ owner, repo });
+        const XXX = pullRequestsReviews.map(formatMessage).filter(Boolean);
 
-        if (pullRequests.length) {
-          console.log(`
-            Pour le projet suivant ${owner}/${repo},
-            Voici les pull-requets qui nécéssitent une review : 
-            ${pullRequests[0].title} — ${pullRequests[0].html_url}
-          `);
-        }
+        // 
+        const { data } = await slackWrapper({
+          request: 'chat.postMessage',
+          params: {
+            channel: payload.channel_id,
+            text: `Pour le dépôt ${repository} ⬇️`,
+          },
+        });
+
+        //
+        await Promise.all(
+          XXX.map((XX) => {
+            slackWrapper({
+              request: 'chat.postMessage',
+              params: {
+                channel: payload.channel_id,
+                thread_ts: data.message.ts,
+                text: XX,
+              },
+            });
+          }),
+        );
       }
     }
 
