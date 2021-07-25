@@ -1,29 +1,38 @@
 /*
  * Package Import
  */
-import { Handler } from '@netlify/functions'
+import { Handler } from '@netlify/functions';
 
 /*
  * Local Import
  */
 import initializeDatabase from '../utils/database';
-
+import { setSlackResponse } from '../utils/slack';
 
 /**
- * 
- * @param event 
- * @param context 
- * @returns 
+ *
+ * @param items
+ * @returns
  */
-const handler: Handler = async (event, context) => {  
-  // Data
-  const database = await initializeDatabase();
+const formatMessage = (items) => {
+  return `Nouvelle liste : \n\n${items
+    .map((item) => `* ${item}\n`)
+    .join('')}`;
+};
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ message: database.data.repositories })
-  }
-}
+/**
+ *
+ * @param event
+ * @param context
+ * @returns
+ */
+const handler: Handler = async (event, context) => {
+  // Init
+  const database = await initializeDatabase();
+  const repositories = formatMessage(database.data.repositories);
+
+  return setSlackResponse(repositories);
+};
 
 /**
  * Export
