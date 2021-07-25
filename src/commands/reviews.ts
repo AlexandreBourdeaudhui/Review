@@ -1,9 +1,7 @@
 /*
  * Package Import
  */
-import queryString from 'querystring';
 import { Octokit } from '@octokit/core';
-import { Handler } from '@netlify/functions';
 
 /*
  * Local Import
@@ -95,31 +93,11 @@ const getPullRequests = async ({
 
 /**
  *
- * @param title
- * @param html_url
- * @returns
  */
-const formatMessage = ({
-  title,
-  html_url,
-}: {
-  title: string;
-  html_url: string;
-}): string => {
-  return `[${title}](${html_url})`;
-};
-
-/**
- *
- * @param event
- * @param context
- * @returns
- */
-const handler: Handler = async (event, context) => {
+export default async (payload) => {
   try {
     // Init
     const db = await initializeDatabase();
-    const payload = queryString.parse(event.body);
 
     //
     for (const repository of db.data.repositories) {
@@ -127,46 +105,32 @@ const handler: Handler = async (event, context) => {
 
       if (owner && repo) {
         const pullRequestsReviews = await getPullRequests({ owner, repo });
-        const XXX = pullRequestsReviews.map(formatMessage).filter(Boolean);
 
-        // 
+        //
         const { data } = await slackWrapper({
           request: 'chat.postMessage',
           params: {
             channel: payload.channel_id,
-            text: `Pour le dépôt ${repository} ⬇️`,
+            text: `For the following repository : <https://github.com/${repository}|${repository}> :arrow_heading_down: `,
           },
         });
 
-        //
+        // In thread,
         await Promise.all(
-          XXX.map((XX) => {
+          pullRequestsReviews.map(({ html_url, title }) => {
             slackWrapper({
               request: 'chat.postMessage',
               params: {
                 channel: payload.channel_id,
                 thread_ts: data.message.ts,
-                text: XX,
+                text: `<${html_url}|${title}>`,
               },
             });
           }),
         );
       }
     }
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ message: 'Hello World' }),
-    };
   } catch (error) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify(error),
-    };
+    //
   }
 };
-
-/**
- * Export
- */
-export { handler };
