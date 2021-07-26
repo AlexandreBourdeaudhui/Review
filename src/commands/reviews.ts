@@ -12,29 +12,29 @@ import { PULL_REQUEST_STATE } from '../constants/index';
 import { postMessage } from '../utils/slack';
 import initializeDatabase from '../utils/database';
 
+/**
+ * Types
+ */
+type PullRequest = {
+  owner: string;
+  repo: string;
+  pull_number?: number;
+};
+
 /*
  * Init
  */
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
 /**
- * Get the reviews of pull request X
+ * Get if the pull-request `X` has already a review.
  * @doc https://docs.github.com/en/rest/reference/pulls#list-reviews-for-a-pull-request
- *
- * @param {String} owner
- * @param {String} repo
- * @param {Number} pull_number
- * @return
  */
 const getPullRequestHasReviews = async ({
   owner,
   repo,
   pull_number,
-}: {
-  owner: string;
-  repo: string;
-  pull_number: number;
-}) => {
+}: PullRequest) => {
   const { data } = await octokit.request(
     'GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews',
     {
@@ -52,20 +52,10 @@ const getPullRequestHasReviews = async ({
 };
 
 /**
- * Get all pull requests from GitHub repo
+ * Get all pull-requests from a GitHub repository.
  * @doc https://docs.github.com/en/rest/reference/pulls#list-pull-requests
- *
- * @param {String} owner
- * @param {String} repo
- * @returns
  */
-const getPullRequests = async ({
-  owner,
-  repo,
-}: {
-  owner: string;
-  repo: string;
-}) => {
+const getPullRequests = async ({ owner, repo }: PullRequest) => {
   const { data } = await octokit.request('GET /repos/{owner}/{repo}/pulls', {
     owner,
     repo,

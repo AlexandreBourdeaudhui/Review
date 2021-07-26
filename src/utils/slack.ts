@@ -1,14 +1,33 @@
 /*
  * Package Import
  */
-import axios from 'axios';
+import axios, { AxiosResponse, Method } from 'axios';
+
+/**
+ * Types
+ */
+type Payload = {
+  method?: Method;
+  params: ParamsSlack;
+  request: string;
+};
+
+type ParamsSlack = {
+  channel: string;
+  text: string;
+  thread_ts?: string;
+};
 
 /**
  *
  * @param param0
  * @returns
  */
-export const slackWrapper = ({ method = 'POST', request, params }) =>
+export const slackWrapper = ({
+  method = 'POST',
+  params,
+  request,
+}: Payload): Promise<AxiosResponse> =>
   axios({
     method,
     url: `https://slack.com/api/${request}`,
@@ -17,26 +36,21 @@ export const slackWrapper = ({ method = 'POST', request, params }) =>
   });
 
 /**
- *
- * @param params
- * @returns
+ * Post message
+ * @doc https://api.slack.com/methods/chat.postMessage
  */
-export const postMessage = (params) =>
+export const postMessage = (params: ParamsSlack): Promise<AxiosResponse> =>
   slackWrapper({
     request: 'chat.postMessage',
     params,
   });
 
 /**
- * Send to Slack
- * @param {Array} items
- * @return {Object}
+ * Post an ephemeral message
+ * @doc https://api.slack.com/methods/chat.postEphemeral
  */
-export const setSlackResponse = (statusCode = 200, items) => ({
-  statusCode,
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    response_type: 'in_channel',
-    text: items,
-  }),
-});
+export const ephemeralMessage = (params: ParamsSlack): Promise<AxiosResponse> =>
+  slackWrapper({
+    request: 'chat.postEphemeral',
+    params,
+  });
