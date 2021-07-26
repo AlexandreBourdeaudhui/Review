@@ -51,14 +51,18 @@ export const handler: Handler = async (event, context) => {
       // @TODO2, regarder où "watch" le dossier "src" pour que ça soit automatiquement prit en compte lors d'une sauvegarde
       if (action === 'day') {
         reviews(payload);
-      } else if (action === 'list') {
+      }
+      else if (action === 'list') {
         list(payload);
-      } else if (action === 'subscribe') {
+      }
+      else if (action === 'subscribe') {
         subscribe(payload, params);
-      } else if (action === 'unsubscribe') {
+      }
+      else if (action === 'unsubscribe') {
         unsubscribe(payload, params);
       }
-    } else {
+    }
+    else {
       return {
         statusCode: 200,
         body: help(),
@@ -69,7 +73,8 @@ export const handler: Handler = async (event, context) => {
       statusCode: 200,
       body: '',
     };
-  } catch (error) {
+  }
+  catch (error) {
     console.log({ error });
 
     return {

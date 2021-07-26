@@ -31,9 +31,9 @@ const getPullRequestHasReviews = async ({
   repo,
   pull_number,
 }: {
-  owner: string;
-  repo: string;
-  pull_number: number;
+  owner: string,
+  repo: string,
+  pull_number: number,
 }) => {
   const { data } = await octokit.request(
     'GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews',
@@ -46,8 +46,8 @@ const getPullRequestHasReviews = async ({
 
   return data.some(
     (pullRequest) =>
-      pullRequest.state === PULL_REQUEST_STATE.APPROVED ||
-      pullRequest.state === PULL_REQUEST_STATE.DENIED,
+      pullRequest.state === PULL_REQUEST_STATE.APPROVED
+      || pullRequest.state === PULL_REQUEST_STATE.DENIED,
   );
 };
 
@@ -63,8 +63,8 @@ const getPullRequests = async ({
   owner,
   repo,
 }: {
-  owner: string;
-  repo: string;
+  owner: string,
+  repo: string,
 }) => {
   const { data } = await octokit.request('GET /repos/{owner}/{repo}/pulls', {
     owner,
@@ -132,7 +132,8 @@ export default async (payload) => {
         }
       }
     }
-  } catch (error) {
+  }
+  catch (error) {
     //
   }
 };
