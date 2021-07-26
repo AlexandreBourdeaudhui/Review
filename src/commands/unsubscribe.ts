@@ -28,8 +28,10 @@ export default async (payload, params) => {
 
   //
   if (!isEmpty) {
-    if (!database.data.repositories.includes(repository)) {
-      database.data.repositories.push(repository);
+    if (database.data.repositories.includes(repository)) {
+      database.data.repositories = database.data.repositories.filter(
+        (repositoryDatabase) => repositoryDatabase !== repository,
+      );
 
       await database.write();
 
@@ -37,17 +39,17 @@ export default async (payload, params) => {
         request: 'chat.postMessage',
         params: {
           channel: payload.channel_id,
-          text: `Subscribed to <https://github.com/${repository}|${repository}>. This channel will be scanned for availables reviews.`,
+          text: `Unsubscribed from <https://github.com/${repository}|${repository}>.`,
         },
       });
     }
 
     // else {
-    // Repository already exist
+    // Repository doesn’t exist
     // }
   }
 
   // else {
-  // Please provide a repository to subscribe
+  // Please provide a repository to unsubscribe
   // }
 };
