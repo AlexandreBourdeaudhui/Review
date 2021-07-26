@@ -106,28 +106,30 @@ export default async (payload) => {
       if (owner && repo) {
         const pullRequestsReviews = await getPullRequests({ owner, repo });
 
-        //
-        const { data } = await slackWrapper({
-          request: 'chat.postMessage',
-          params: {
-            channel: payload.channel_id,
-            text: `For the following repository : <https://github.com/${repository}|${repository}> :arrow_heading_down: `,
-          },
-        });
+        if (pullRequestsReviews.length) {
+          //
+          const { data } = await slackWrapper({
+            request: 'chat.postMessage',
+            params: {
+              channel: payload.channel_id,
+              text: `Available reviews for the following repository <https://github.com/${repository}|${repository}> :arrow_heading_down:`,
+            },
+          });
 
-        // In thread,
-        await Promise.all(
-          pullRequestsReviews.map(({ html_url, title }) => {
-            slackWrapper({
-              request: 'chat.postMessage',
-              params: {
-                channel: payload.channel_id,
-                thread_ts: data.message.ts,
-                text: `<${html_url}|${title}>`,
-              },
-            });
-          }),
-        );
+          // In thread,
+          await Promise.all(
+            pullRequestsReviews.map(({ html_url, title }) => {
+              slackWrapper({
+                request: 'chat.postMessage',
+                params: {
+                  channel: payload.channel_id,
+                  thread_ts: data.message.ts,
+                  text: `<${html_url}|${title}>`,
+                },
+              });
+            }),
+          );
+        }
       }
     }
   } catch (error) {
