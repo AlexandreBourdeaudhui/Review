@@ -20,7 +20,7 @@ export default async (payload) => {
   };
 
   //
-  const { data } = await slackWrapper({
+  return slackWrapper({
     request: 'chat.postMessage',
     params: {
       channel: payload.channel_id,

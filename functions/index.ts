@@ -9,6 +9,7 @@ import { Handler } from '@netlify/functions';
  */
 import reviews from '../src/commands/reviews';
 import subscribe from '../src/commands/subscribe';
+import unsubscribe from '../src/commands/unsubscribe';
 import list from '../src/commands/list';
 import help from '../src/commands/help';
 
@@ -47,14 +48,15 @@ export const handler: Handler = async (event, context) => {
       const [, action, params] = regex.exec(payload.text);
 
       // @TODO, factoriser
+      // @TODO2, regarder où "watch" le dossier "src" pour que ça soit automatiquement prit en compte lors d'une sauvegarde
       if (action === 'day') {
         reviews(payload);
       } else if (action === 'list') {
         list(payload);
       } else if (action === 'subscribe') {
-        subscribe(payload);
-      } else {
-        help();
+        subscribe(payload, params);
+      } else if (action === 'unsubscribe') {
+        unsubscribe(payload, params);
       }
     } else {
       return {
@@ -63,7 +65,10 @@ export const handler: Handler = async (event, context) => {
       };
     }
 
-    return { statusCode: 200 };
+    return {
+      statusCode: 200,
+      body: '',
+    };
   } catch (error) {
     console.log({ error });
 
