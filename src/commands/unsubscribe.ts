@@ -1,7 +1,7 @@
 /*
  * Local Import
  */
-import { slackWrapper } from '../utils/slack';
+import { postMessage } from '../utils/slack';
 import initializeDatabase from '../utils/database';
 
 /**
@@ -35,12 +35,9 @@ export default async (payload, params) => {
 
       await database.write();
 
-      await slackWrapper({
-        request: 'chat.postMessage',
-        params: {
-          channel: payload.channel_id,
-          text: `Unsubscribed from <https://github.com/${repository}|${repository}>.`,
-        },
+      await postMessage({
+        channel: payload.channel_id,
+        text: `Unsubscribed from <https://github.com/${repository}|${repository}>.`,
       });
     }
 

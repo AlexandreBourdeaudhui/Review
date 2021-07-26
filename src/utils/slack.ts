@@ -17,6 +17,17 @@ export const slackWrapper = ({ method = 'POST', request, params }) =>
   });
 
 /**
+ *
+ * @param params
+ * @returns
+ */
+export const postMessage = (params) =>
+  slackWrapper({
+    request: 'chat.postMessage',
+    params,
+  });
+
+/**
  * Send to Slack
  * @param {Array} items
  * @return {Object}

@@ -1,8 +1,8 @@
 /*
  * Local Import
  */
+import { postMessage } from '../utils/slack';
 import initializeDatabase from '../utils/database';
-import { slackWrapper } from '../utils/slack';
 
 /**
  *
@@ -20,14 +20,10 @@ const getList = (repositories) =>
 export default async (payload) => {
   // Init
   const database = await initializeDatabase();
-  const { repositories } = database.data;
 
   //
-  return slackWrapper({
-    request: 'chat.postMessage',
-    params: {
-      channel: payload.channel_id,
-      text: getList(repositories),
-    },
+  await postMessage({
+    channel: payload.channel_id,
+    text: getList(database.data.repositories),
   });
 };

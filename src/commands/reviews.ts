@@ -9,8 +9,8 @@ import { Octokit } from '@octokit/core';
 import { PULL_REQUEST_STATE } from '../constants/index';
 
 // Helpers
+import { postMessage } from '../utils/slack';
 import initializeDatabase from '../utils/database';
-import { slackWrapper } from '../utils/slack';
 
 /*
  * Init
@@ -31,9 +31,9 @@ const getPullRequestHasReviews = async ({
   repo,
   pull_number,
 }: {
-  owner: string,
-  repo: string,
-  pull_number: number,
+  owner: string;
+  repo: string;
+  pull_number: number;
 }) => {
   const { data } = await octokit.request(
     'GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews',
@@ -46,8 +46,8 @@ const getPullRequestHasReviews = async ({
 
   return data.some(
     (pullRequest) =>
-      pullRequest.state === PULL_REQUEST_STATE.APPROVED
-      || pullRequest.state === PULL_REQUEST_STATE.DENIED,
+      pullRequest.state === PULL_REQUEST_STATE.APPROVED ||
+      pullRequest.state === PULL_REQUEST_STATE.DENIED,
   );
 };
 
@@ -63,8 +63,8 @@ const getPullRequests = async ({
   owner,
   repo,
 }: {
-  owner: string,
-  repo: string,
+  owner: string;
+  repo: string;
 }) => {
   const { data } = await octokit.request('GET /repos/{owner}/{repo}/pulls', {
     owner,
@@ -108,32 +108,25 @@ export default async (payload) => {
 
         if (pullRequestsReviews.length) {
           //
-          const { data } = await slackWrapper({
-            request: 'chat.postMessage',
-            params: {
-              channel: payload.channel_id,
-              text: `Available reviews for the following repository <https://github.com/${repository}|${repository}> :arrow_heading_down:`,
-            },
+          const { data } = await postMessage({
+            channel: payload.channel_id,
+            text: `Available reviews for the following repository <https://github.com/${repository}|${repository}> :arrow_heading_down:`,
           });
 
           // In thread,
           await Promise.all(
             pullRequestsReviews.map(({ html_url, title }) => {
-              slackWrapper({
-                request: 'chat.postMessage',
-                params: {
-                  channel: payload.channel_id,
-                  thread_ts: data.message.ts,
-                  text: `<${html_url}|${title}>`,
-                },
+              postMessage({
+                channel: payload.channel_id,
+                thread_ts: data.message.ts,
+                text: `<${html_url}|${title}>`,
               });
             }),
           );
         }
       }
     }
-  }
-  catch (error) {
-    //
+  } catch (error) {
+    throw new Error(error);
   }
 };
