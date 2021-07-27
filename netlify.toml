@@ -2,8 +2,8 @@
 autoLaunch = false
 
 [build]
-command = "npm i"
-functions = "functions/"
+command = "npm i && npm build"
+functions = "src/functions/"
 
 [[redirects]]
 from = "/"

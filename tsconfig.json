@@ -14,5 +14,5 @@
       "*": ["node_modules/*", "src/types/*"]
     }
   },
-  "include": ["src/**/*", "functions/**/*"]
+  "include": ["src/**/*", "src/functions/**/*"]
 }

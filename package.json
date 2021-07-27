@@ -4,6 +4,7 @@
   "main": "src/functions/index.ts",
   "license": "MIT",
   "scripts": {
+    "build": "tsc",
     "test": "jest --coverage --runInBand --logHeapUsage --color --bail --forceExit"
   },
   "dependencies": {
