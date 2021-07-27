@@ -19,9 +19,7 @@ type ParamsSlack = {
 };
 
 /**
- *
- * @param param0
- * @returns
+ * Wrapper call API Slack
  */
 export const slackWrapper = ({
   method = 'POST',
