@@ -15,7 +15,7 @@ import initializeDatabase from '../utils/database';
 /**
  * Types
  */
-type PullRequest = {
+interface PullRequest {
   owner: string;
   repo: string;
   pull_number?: number;
