@@ -10,8 +10,7 @@
     "@netlify/functions": "^0.7.2",
     "@octokit/core": "^3.4.0",
     "axios": "^0.21.1",
-    "is-plain-object": "^5.0.0",
-    "lowdb": "^2.1.0"
+    "is-plain-object": "^5.0.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.18.0",
