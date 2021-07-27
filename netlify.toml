@@ -2,7 +2,7 @@
 autoLaunch = false
 
 [build]
-command = "npm i && yarn build"
+command = "npm run build"
 functions = "src/functions/"
 
 [[redirects]]

@@ -12,7 +12,7 @@ import initializeDatabase from '../utils/database';
 /**
  *
  */
-export default async (payload, params) => {
+export default async (payload, params): Promise<void> => {
   // Init
   const database = await initializeDatabase();
 

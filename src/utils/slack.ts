@@ -10,13 +10,13 @@ interface Payload {
   method?: Method;
   params: ParamsSlack;
   request: string;
-};
+}
 
 interface ParamsSlack {
   channel: string;
   text: string;
   thread_ts?: string;
-};
+}
 
 /**
  * Wrapper call API Slack

@@ -1,4 +1,4 @@
-export default () => `
+export default (): string => `
 Invalid command! :eyes:
 Need some help with \`/reviews\` command?
 

@@ -5,11 +5,14 @@ import { postMessage } from '../utils/slack';
 import initializeDatabase from '../utils/database';
 
 /**
- *
- * @param {*} repositories
- * @returns
+ * Types
  */
-const getList = (repositories) =>
+type Repositories =  string[];
+
+/**
+ *
+ */
+const getList = (repositories: Repositories) =>
   `Subscribed to the following repository : \n\n${repositories
     .map((repository) => `- <https://github.com/${repository}|${repository}>\n`)
     .join('')}`;
@@ -17,7 +20,7 @@ const getList = (repositories) =>
 /**
  *
  */
-export default async (payload) => {
+export default async (payload): Promise<void> => {
   // Init
   const database = await initializeDatabase();
 

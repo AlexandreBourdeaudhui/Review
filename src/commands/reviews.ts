@@ -19,7 +19,7 @@ interface PullRequest {
   owner: string;
   repo: string;
   pull_number?: number;
-};
+}
 
 /*
  * Init
