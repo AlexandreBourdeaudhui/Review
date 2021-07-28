@@ -7,11 +7,11 @@ import { Handler } from '@netlify/functions';
 /*
  * Local Import
  */
-import reviews from '../commands/reviews';
-import subscribe from '../commands/subscribe';
-import unsubscribe from '../commands/unsubscribe';
-import list from '../commands/list';
-import help from '../commands/help';
+import reviews from '../src/commands/reviews';
+import subscribe from '../src/commands/subscribe';
+import unsubscribe from '../src/commands/unsubscribe';
+import list from '../src/commands/list';
+import help from '../src/commands/help';
 
 /**
  *

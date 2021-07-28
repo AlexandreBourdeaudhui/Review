@@ -3,8 +3,8 @@ autoLaunch = false
 
 [build]
 command = "npm i"
-functions = "src/functions"
-publish = "dist"
+functions = "functions/"
+publish = "dist/"
 
 [[redirects]]
 from = "/"

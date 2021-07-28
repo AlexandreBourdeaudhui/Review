@@ -1,7 +1,7 @@
 {
   "name": "@qlex_/review",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
     "test": "jest --coverage --runInBand --logHeapUsage --color --bail --forceExit"
