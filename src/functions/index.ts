@@ -11,7 +11,10 @@ import reviews from '../commands/reviews';
 import subscribe from '../commands/subscribe';
 import unsubscribe from '../commands/unsubscribe';
 import list from '../commands/list';
-import help from '../commands/help';
+import getHelpCommands from '../commands/help';
+
+//
+import { COMMANDS } from '../constants/index';
 
 /**
  *
@@ -20,66 +23,57 @@ import help from '../commands/help';
  * @returns
  */
 export const handler: Handler = async (event, context) => {
-  // Unauthorized Request.
+  // Init
+  const commands = new Map();
+  const payload = queryString.parse(event.body);
+
+  // Unauthorized Request…
   if (!process.env.GITHUB_TOKEN || !process.env.TOKEN_SLACK) {
-    return {
-      statusCode: 401,
-      body: JSON.stringify({
-        message: 'Unauthorized Request. Please check your configuration file.',
-      }),
+    return { statusCode: 401, body: JSON.stringify({ message: 'Unauthorized Request. Please check your configuration file.' }),
     };
   }
 
-  // Not Found.
+  // Payload not found…
   if (!event.body) {
+    return { statusCode: 404, body: JSON.stringify({ message: 'Not Found.' }) };
+  }
+
+  // URL verification request, from Slack…
+  if (payload && payload.type && payload.type === 'url_verification') {
     return {
-      statusCode: 404,
-      body: JSON.stringify({ message: 'Not Found.' }),
+      statusCode: 200,
+      body: payload.challenge,
     };
   }
 
+  // Let’s go
   try {
-    // Init
-    const payload = queryString.parse(event.body);
+    // Commands
+    commands.set(COMMANDS.LIST, list);
+    commands.set(COMMANDS.DAY, reviews);
+    commands.set(COMMANDS.SUBSCRIBE, subscribe);
+    commands.set(COMMANDS.UNSUBSSCRIBE, unsubscribe);
 
     if (payload.text) {
-      //
+      // Analyze payload
       const regex = /([\w:]+)\s?(.*)?/gi;
       const [, action, params] = regex.exec(payload.text);
 
-      // @TODO, factoriser
-      // @TODO2, regarder où "watch" le dossier "src" pour que ça soit automatiquement prit en compte lors d'une sauvegarde
-      if (action === 'day') {
-        reviews(payload);
+      // Commands
+      if (commands.has(action)) {
+        const command = commands.get(action);
+        command(payload, ...params);
       }
-      else if (action === 'list') {
-        list(payload);
-      }
-      else if (action === 'subscribe') {
-        subscribe(payload, params);
-      }
-      else if (action === 'unsubscribe') {
-        unsubscribe(payload, params);
-      }
-    }
-    else {
-      return {
-        statusCode: 200,
-        body: help(),
-      };
-    }
 
-    return {
-      statusCode: 200,
-      body: '',
-    };
+      // Unknown command
+      else {
+        return { statusCode: 200, body: getHelpCommands() };
+      }
+
+      return { statusCode: 200, body: { ok: true } };
+    }
   }
   catch (error) {
-    console.log({ error });
-
-    return {
-      statusCode: 400,
-      body: JSON.stringify(error),
-    };
+    return { statusCode: 400, body: JSON.stringify(error) };
   }
 };
