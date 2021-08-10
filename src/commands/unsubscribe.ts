@@ -1,21 +1,28 @@
 /*
+ * Package Import
+ */
+import { DynamoDB } from 'aws-sdk';
+
+/*
  * Local Import
  */
 import { postMessage } from '../utils/slack';
-import initializeDatabase from '../utils/database';
+
+/*
+ * Init
+ */
+const dynamoDb = new DynamoDB.DocumentClient();
 
 /**
  * Code
  */
 // const regExp = new RegExp('(?:https://)github.com[:/](.*)', 'g');
 
+
 /**
  *
  */
 export default async (payload, params): Promise<void> => {
-  // Init
-  const database = await initializeDatabase();
-
   // const matches = regExp.exec(repository);
 
   // if (matches) {
@@ -28,18 +35,16 @@ export default async (payload, params): Promise<void> => {
 
   //
   if (!isEmpty) {
-    if (database.data.repositories.includes(repository)) {
-      database.data.repositories = database.data.repositories.filter(
-        (repositoryDatabase) => repositoryDatabase !== repository,
-      );
+    // if (database.data.repositories.includes(repository)) {
+    await dynamoDb
+      .delete({ TableName: process.env.DYNAMODB_TABLE, Key: { repository: repository } })
+      .promise();
 
-      await database.write();
-
-      await postMessage({
-        channel: payload.channel_id,
-        text: `Unsubscribed from <https://github.com/${repository}|${repository}>.`,
-      });
-    }
+    await postMessage({
+      channel: payload.channel_id,
+      text: `Unsubscribed from <https://github.com/${repository}|${repository}>.`,
+    });
+    // }
 
     // else {
     // Repository doesn’t exist

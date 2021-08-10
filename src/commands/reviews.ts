@@ -1,16 +1,14 @@
 /*
  * Package Import
  */
+import { DynamoDB } from 'aws-sdk';
 import { Octokit } from '@octokit/core';
 
 /*
  * Local Import
  */
 import { PULL_REQUEST_STATE } from '../constants/index';
-
-// Helpers
 import { postMessage } from '../utils/slack';
-import initializeDatabase from '../utils/database';
 
 /**
  * Types
@@ -24,6 +22,7 @@ interface PullRequest {
 /*
  * Init
  */
+const dynamoDb = new DynamoDB.DocumentClient();
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
 /**
@@ -86,11 +85,13 @@ const getPullRequests = async ({ owner, repo }: PullRequest) => {
  */
 export default async (payload) => {
   try {
-    // Init
-    const db = await initializeDatabase();
+    //
+    const { Items } = await dynamoDb
+      .scan({ TableName: process.env.DYNAMODB_TABLE })
+      .promise();
 
     //
-    for (const repository of db.data.repositories) {
+    for (const { repository } of Items) {
       const [owner, repo] = repository.split('/');
 
       if (owner && repo) {

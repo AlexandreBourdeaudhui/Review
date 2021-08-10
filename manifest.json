@@ -1,0 +1,44 @@
+{
+    "_metadata": {
+        "major_version": 1,
+        "minor_version": 1
+    },
+    "display_information": {
+        "name": "Review",
+        "description": "Get pull-requests that need to be reviewed.",
+        "background_color": "#1d7c00"
+    },
+    "features": {
+        "app_home": {
+            "home_tab_enabled": false,
+            "messages_tab_enabled": true,
+            "messages_tab_read_only_enabled": true
+        },
+        "bot_user": {
+            "display_name": "Reviewzer",
+            "always_online": true
+        },
+        "slash_commands": [
+            {
+                "command": "/reviews",
+                "url": "{{PLEASE_JOIN_URL}}",
+                "description": "Get pull-requests that need to be reviewed.",
+                "usage_hint": "help, day, list, or subscribe organization/repository",
+                "should_escape": false
+            }
+        ]
+    },
+    "oauth_config": {
+        "scopes": {
+            "bot": [
+                "commands",
+                "chat:write"
+            ]
+        }
+    },
+    "settings": {
+        "org_deploy_enabled": false,
+        "socket_mode_enabled": false,
+        "token_rotation_enabled": false
+    }
+}
