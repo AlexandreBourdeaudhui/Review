@@ -18,8 +18,6 @@ A serverless [Slack Slash Commands](https://api.slack.com/slash-commands) to get
 
 ### Install on Slack
 
-To install the Slack Slash Commands : 
-
 - Go to https://api.slack.com/apps/
 - Click on `Create New App`
 - Click on `From an app manifest`
