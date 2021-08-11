@@ -1,6 +1,6 @@
 # Review
 
-A serverless [Slack Slash Commands](https://api.slack.com/slash-commands) to get the pull-requests that need to be reviewed, using [AWS Lambda](https://aws.amazon.com/fr/lambda/), and [DynamoDB](https://aws.amazon.com/fr/dynamodb/).
+A serverless [Slack Slash Commands](https://api.slack.com/slash-commands) to get pull-requests from your repositories, that need to be reviewed. Using [AWS Lambda](https://aws.amazon.com/fr/lambda/), and [DynamoDB](https://aws.amazon.com/fr/dynamodb/).
 
 ## Getting Started
 
@@ -13,31 +13,28 @@ A serverless [Slack Slash Commands](https://api.slack.com/slash-commands) to get
 
 ### Create GitHub token
 
-* Create a [personnel access token](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token) with `repo` permission.
-
-* View and copy the token to a temporary place. You'll need it later.
+- Create a [personnel access token](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token) with `repo` permission.
+- View and copy the token to a temporary place. You'll need it later.
 
 ### Install on Slack
 
 To install the Slack Slash Commands : 
 
-* Go to https://api.slack.com/apps/
-* Click on `Create New App`
-* Click on `From an app manifest`
-* Select the workspace
-* Choose `JSON` tab, and copy data from the `./manifest.json` file
-* Review summary and create the app
-* Install to Workspace
-* Click on `OAuth & Permissions`, view and copy the token (`xoxb-XXXX`) to a temporary place. You'll need it later. 
+- Go to https://api.slack.com/apps/
+- Click on `Create New App`
+- Click on `From an app manifest`
+- Select the workspace
+- Choose `JSON` tab, and copy data from the `./manifest.json` file
+- Review summary and create the app
+- Install to Workspace
+- Click on `OAuth & Permissions`, view and copy the token (`xoxb-XXXX`) to a temporary place. You'll need it later. 
 
 ### Deploy
 
 - Create an `.env` file and fill it with the properties of the` .env.example` file.
-
 - ```shell
   $ serverless deploy
    ```
-
 - Once the deploy is successful, get the `endpoints` and update the `Request URL` of the Slash `/reviews` Command.
 
 ## Available commands
