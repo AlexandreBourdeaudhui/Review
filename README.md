@@ -32,9 +32,7 @@ To install the Slack Slash Commands :
 ### Deploy
 
 - Create an `.env` file and fill it with the properties of the` .env.example` file.
-- ```shell
-  $ serverless deploy
-   ```
+- `serverless deploy` 
 - Once the deploy is successful, get the `endpoints` and update the `Request URL` of the Slash `/reviews` Command.
 
 ## Available commands
