@@ -7,14 +7,14 @@ import { Handler } from 'aws-lambda';
 /*
  * Local Import
  */
+import { GET_COMMAND, COMMANDS } from '../constants/index';
+
+// Commands
 import commandList from '../commands/list';
 import getHelpCommands from '../commands/help';
 import commandReviews from '../commands/reviews';
 import commandSubscribe from '../commands/subscribe';
 import commandUnsubscribe from '../commands/unsubscribe';
-
-//
-import { COMMANDS } from '../constants/index';
 
 /**
  * Types
@@ -34,11 +34,6 @@ import { COMMANDS } from '../constants/index';
 //   response_url: string;
 //   trigger_id: string;
 // }
-
-/**
- * Constants
- */
-const COMMAND = /([\w:]+)\s?(.*)?/gi;
 
 /**
  *
@@ -69,42 +64,33 @@ export const handler: Handler = async (event) => {
   try {
     if (payload.text) {
       // Analyze payload
-      const [, action, params] = COMMAND.exec(payload.text);
-      COMMAND.lastIndex = 0;
+      const [, action, params] = GET_COMMAND.exec(payload.text);
+      GET_COMMAND.lastIndex = 0;
 
-      // Command : Get the list of subscribed repository
+      // • Command : Get the list of subscribed repository
       if (action === COMMANDS.LIST) {
-        await commandList(payload);
+        return commandList();
       }
 
-      // Command : Get available reviews
+      // • Command : Get available reviews
       else if (action === COMMANDS.DAY) {
-        await commandReviews(payload);
+        return commandReviews(payload);
       }
 
-      // Command : Subscribe a repository to review
+      // • Command : Subscribe a repository to review
       else if (action === COMMANDS.SUBSCRIBE) {
-        await commandSubscribe(payload, params);
+        return commandSubscribe(params);
       }
 
-      // Command : Unsubscribe a repository
+      // • Command : Unsubscribe a repository
       else if (action === COMMANDS.UNSUBSSCRIBE) {
-        await commandUnsubscribe(payload, params);
+        return commandUnsubscribe(params);
       }
 
-      // Unknown command
+      // • Unknown command
       else {
-        return {
-          statusCode: 200,
-          body: getHelpCommands(),
-        };
+        return getHelpCommands();
       }
-
-      // All right
-      return {
-        statusCode: 200,
-        body: { ok: true },
-      };
     }
   } catch (error) {
     console.error(error);

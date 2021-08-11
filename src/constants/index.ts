@@ -1,18 +1,23 @@
 /**
- *
+ * RegExp
  */
-export const PULL_REQUEST_STATE = Object.freeze({
-  APPROVED: 'APPROVED',
-  DENIED: 'DENIED',
-  REVIEW: 'REVIEW',
-});
+export const GET_COMMAND = /([\w:]+)\s?(.*)?/gi;
 
 /**
- * Types
+ * Available commands
  */
 export enum COMMANDS {
   DAY = 'day',
   LIST = 'list',
   SUBSCRIBE = 'subscribe',
   UNSUBSSCRIBE = 'unsubscribe',
+}
+
+/**
+ * Possible state for pull request
+ */
+export enum PULL_REQUEST_STATE {
+  APPROVED = 'APPROVED',
+  DENIED = 'DENIED',
+  REVIEW = 'REVIEW',
 }

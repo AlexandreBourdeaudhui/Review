@@ -2,121 +2,85 @@
  * Package Import
  */
 import { DynamoDB } from 'aws-sdk';
-import { Octokit } from '@octokit/core';
 
 /*
  * Local Import
  */
-import { PULL_REQUEST_STATE } from '../constants/index';
+import { getAvailableReviews } from '../utils/github';
 import { postMessage } from '../utils/slack';
-
-/**
- * Types
- */
-interface PullRequest {
-  owner: string;
-  repo: string;
-  pull_number?: number;
-}
 
 /*
  * Init
  */
 const dynamoDb = new DynamoDB.DocumentClient();
-const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
 /**
- * Get if the pull-request `X` has already a review.
- * @doc https://docs.github.com/en/rest/reference/pulls#list-reviews-for-a-pull-request
+ * List all the pull-requests to review, in Slack thread.
  */
-const getPullRequestHasReviews = async ({
-  owner,
-  repo,
-  pull_number,
-}: PullRequest) => {
-  const { data } = await octokit.request(
-    'GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews',
-    {
-      owner,
-      repo,
-      pull_number,
-    },
-  );
-
-  return data.some(
-    (pullRequest) =>
-      pullRequest.state === PULL_REQUEST_STATE.APPROVED ||
-      pullRequest.state === PULL_REQUEST_STATE.DENIED,
-  );
-};
-
-/**
- * Get all pull-requests from a GitHub repository.
- * @doc https://docs.github.com/en/rest/reference/pulls#list-pull-requests
- */
-const getPullRequests = async ({ owner, repo }: PullRequest) => {
-  const { data } = await octokit.request('GET /repos/{owner}/{repo}/pulls', {
-    owner,
-    repo,
-    state: 'open',
-  });
-
-  const pullRequestsReview = await Promise.all(
-    data.map(async (pullRequest) => {
-      const isDraft = pullRequest.draft;
-      const alreadyHasReview = await getPullRequestHasReviews({
-        owner,
-        repo,
-        pull_number: pullRequest.number,
-      });
-
-      if (!isDraft && !alreadyHasReview) {
-        return pullRequest;
-      }
+const listAvailableReviews = ({ availableReviews, data, payload }) =>
+  availableReviews.map(({ html_url, title }) =>
+    postMessage({
+      channel: payload.channel_id,
+      thread_ts: data.message.ts,
+      text: `<${html_url}|${title}>`,
     }),
   );
 
-  const pullRequestsReviewFiltered = pullRequestsReview.filter(Boolean);
-  return pullRequestsReviewFiltered;
-};
+/**
+ * Check if we have any pull-requets that need to review
+ * and for each repository with pull-requests to review, send message.
+ *
+ * Note to myself 📝 @see https://stackoverflow.com/a/37576787/8365373
+ * for ... of         : Reading in sequence (more slower 🐌)
+ * Promise.all(.map)  : Reading in parallel (more faster ⚡️)
+ */
+const checkPullRequests = ({ payload, repositories }) =>
+  repositories.map(async ({ repository }) => {
+    const [owner, repo] = repository.split('/');
+
+    if (owner && repo) {
+      const availableReviews = await getAvailableReviews({ owner, repo });
+      console.log(
+        `${repository} has ${availableReviews.length} pull-request to review`,
+      );
+
+      if (availableReviews.length) {
+        const { data } = await postMessage({
+          channel: payload.channel_id,
+          text: `Available reviews for the following repository <https://github.com/${repository}|${repository}> :arrow_heading_down:`,
+        });
+
+        await Promise.all(
+          listAvailableReviews({ data, payload, availableReviews }),
+        );
+      }
+    }
+  });
 
 /**
  *
  */
 export default async (payload) => {
   try {
-    //
-    const { Items } = await dynamoDb
+    const { Items: repositories } = await dynamoDb
       .scan({ TableName: process.env.DYNAMODB_TABLE })
       .promise();
 
     //
-    for (const { repository } of Items) {
-      const [owner, repo] = repository.split('/');
+    await Promise.all(checkPullRequests({ payload, repositories }));
 
-      if (owner && repo) {
-        const pullRequestsReviews = await getPullRequests({ owner, repo });
-
-        if (pullRequestsReviews.length) {
-          //
-          const { data } = await postMessage({
-            channel: payload.channel_id,
-            text: `Available reviews for the following repository <https://github.com/${repository}|${repository}> :arrow_heading_down:`,
-          });
-
-          // In thread,
-          await Promise.all(
-            pullRequestsReviews.map(({ html_url, title }) => {
-              postMessage({
-                channel: payload.channel_id,
-                thread_ts: data.message.ts,
-                text: `<${html_url}|${title}>`,
-              });
-            }),
-          );
-        }
-      }
-    }
+    // @TODO
+    return {
+      statusCode: 200,
+      body: JSON.stringify(
+        {
+          response_type: 'in_channel',
+          text: ':robot_face: I don’t see any other reviews requests at this time.',
+        },
+        null,
+        2,
+      ),
+    };
   } catch (error) {
     throw new Error(error);
   }

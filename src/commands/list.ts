@@ -4,19 +4,14 @@
 import { DynamoDB } from 'aws-sdk';
 
 /*
- * Local Import
+ * Init
  */
-import { postMessage } from '../utils/slack';
+const dynamoDb = new DynamoDB.DocumentClient();
 
 /**
  * Types
  */
 type Repositories = { repository: string };
-
-/*
- * Init
- */
-const dynamoDb = new DynamoDB.DocumentClient();
 
 /**
  *
@@ -30,22 +25,26 @@ const getList = (repositories: Repositories[]) =>
     .join('')}`;
 
 /**
- *
+ * List all active subscriptions to reviews
  */
-export default async (payload): Promise<void> => {
+export default async () => {
   try {
-    //
-    const result = await dynamoDb
+    const { Items } = await dynamoDb
       .scan({ TableName: process.env.DYNAMODB_TABLE })
       .promise();
 
-    //
-    await postMessage({
-      channel: payload.channel_id,
-      text: getList(result.Items),
-    });
+    return {
+      statusCode: 200,
+      body: JSON.stringify(
+        {
+          response_type: 'in_channel',
+          text: getList(Items),
+        },
+        null,
+        2,
+      ),
+    };
   } catch (error) {
-    console.error(error);
     throw new Error(error);
   }
 };

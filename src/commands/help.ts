@@ -1,5 +1,5 @@
 /**
- *
+ * Description of all available commands
  */
 const commands = [
   {
@@ -27,11 +27,19 @@ const commands = [
 /**
  *
  */
-export default (): string => `
-Invalid command! :eyes:
-Need some help with \`/reviews\` command?
-
-${commands
-  .map((command) => `${command.desc} :\n:point_right: \`${command.usage}\`\n\n`)
-  .join('')}
-`;
+export default () => ({
+  statusCode: 200,
+  body: JSON.stringify(
+    {
+      response_type: 'ephemeral',
+      text: `Invalid command! :eyes:\nNeed some help with \`/reviews\` command?\n\n${commands
+        .map(
+          (command) =>
+            `${command.desc} :\n:point_right: \`${command.usage}\`\n\n`,
+        )
+        .join('')}`,
+    },
+    null,
+    2,
+  ),
+});

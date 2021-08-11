@@ -4,11 +4,6 @@
 import { DynamoDB } from 'aws-sdk';
 
 /*
- * Local Import
- */
-import { postMessage } from '../utils/slack';
-
-/*
  * Init
  */
 const dynamoDb = new DynamoDB.DocumentClient();
@@ -21,9 +16,7 @@ const dynamoDb = new DynamoDB.DocumentClient();
 /**
  *
  */
-export default async (payload, params): Promise<void> => {
-  console.log({ payload, params });
-
+export default async (params: string) => {
   // const matches = regExp.exec(repository);
 
   // if (matches) {
@@ -38,16 +31,20 @@ export default async (payload, params): Promise<void> => {
   if (!isEmpty) {
     // if (!database.data.repositories.includes(repository)) {
     await dynamoDb
-      .put({
-        TableName: process.env.DYNAMODB_TABLE,
-        Item: { repository: repository },
-      })
+      .put({ TableName: process.env.DYNAMODB_TABLE, Item: { repository } })
       .promise();
 
-    await postMessage({
-      channel: payload.channel_id,
-      text: `Subscribed to <https://github.com/${repository}|${repository}>. This repository will be scanned for availables reviews. To list all active subscriptions, type \`/reviews list\`.`,
-    });
+    return {
+      statusCode: 200,
+      body: JSON.stringify(
+        {
+          response_type: 'in_channel',
+          text: `Subscribed to <https://github.com/${repository}|${repository}>. This repository will be scanned for availables reviews. To list all active subscriptions, you can type \`/reviews list\`.`,
+        },
+        null,
+        2,
+      ),
+    };
     // }
 
     // else {
