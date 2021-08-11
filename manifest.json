@@ -21,7 +21,7 @@
         "slash_commands": [
             {
                 "command": "/reviews",
-                "url": "{{PLEASE_JOIN_URL}}",
+                "url": "https://{{URL}}",
                 "description": "Get pull-requests that need to be reviewed.",
                 "usage_hint": "help, day, list, or subscribe organization/repository",
                 "should_escape": false
