@@ -7,14 +7,15 @@ import { Handler } from 'aws-lambda';
 /*
  * Local Import
  */
-import { SUBCOMMAND, COMMANDS } from '../constants/index';
-
-// Commands
 import commandList from '../commands/list';
 import getHelpCommands from '../commands/help';
 import commandReviews from '../commands/reviews';
 import commandSubscribe from '../commands/subscribe';
 import commandUnsubscribe from '../commands/unsubscribe';
+
+// Helpers
+import getSubcommand from '../utils/command';
+import { COMMANDS } from '../constants/command';
 
 /**
  * Types
@@ -59,33 +60,28 @@ export const handler: Handler = async (event) => {
 
   // Let’s go
   try {
-    // Init
     const payload = queryString.parse(event.body);
     console.log({ payload });
 
-    const message = payload.text.trim();
-
-    // Analyze
-    const [, action, params] = SUBCOMMAND.exec(message);
-    SUBCOMMAND.lastIndex = 0;
+    const [subcommand, params] = getSubcommand(payload.text);
 
     // • Command : Get the list of subscribed repository
-    if (action === COMMANDS.LIST) {
+    if (subcommand === COMMANDS.LIST) {
       return commandList();
     }
 
     // • Command : Get available reviews
-    if (action === COMMANDS.DAY) {
+    if (subcommand === COMMANDS.DAY) {
       return commandReviews(payload);
     }
 
     // • Command : Subscribe a repository to review
-    if (action === COMMANDS.SUBSCRIBE) {
+    if (subcommand === COMMANDS.SUBSCRIBE) {
       return commandSubscribe(params);
     }
 
     // • Command : Unsubscribe a repository
-    if (action === COMMANDS.UNSUBSSCRIBE) {
+    if (subcommand === COMMANDS.UNSUBSSCRIBE) {
       return commandUnsubscribe(params);
     }
 

@@ -6,7 +6,7 @@ import { Octokit } from '@octokit/core';
 /*
  * Local Import
  */
-import { PULL_REQUEST_STATE } from '../constants/index';
+import { PULL_REQUEST_STATE } from '../constants/github';
 
 /**
  * Types

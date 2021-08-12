@@ -40,7 +40,7 @@ export default () => ({
         })),
         {
           footer:
-            '<https://github.com/AlexandreBourdeaudhui/Review|Code source>',
+            '<https://github.com/AlexandreBourdeaudhui/Review|View code source>',
         },
       ],
     },
