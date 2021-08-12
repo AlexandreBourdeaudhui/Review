@@ -21,7 +21,7 @@ import commandUnsubscribe from '../commands/unsubscribe';
  */
 // interface SlackCommand {
 //   token: string;
-//   team_id: string;
+//   team_id?: string;
 //   team_domain: string;
 //   channel_id: string;
 //   channel_name: string;
@@ -39,9 +39,6 @@ import commandUnsubscribe from '../commands/unsubscribe';
  *
  */
 export const handler: Handler = async (event) => {
-  // Init
-  const payload = queryString.parse(event.body);
-
   // Unauthorized Request…
   if (!process.env.GITHUB_TOKEN || !process.env.TOKEN_SLACK) {
     return {
@@ -62,36 +59,36 @@ export const handler: Handler = async (event) => {
 
   // Let’s go
   try {
-    if (payload.text) {
-      // Analyze payload
-      const [, action, params] = GET_COMMAND.exec(payload.text);
-      GET_COMMAND.lastIndex = 0;
+    // Init
+    const payload = queryString.parse(event.body);
+    const message = payload.text.trim();
 
-      // • Command : Get the list of subscribed repository
-      if (action === COMMANDS.LIST) {
-        return commandList();
-      }
+    // Analyze payload
+    const [, action, params] = GET_COMMAND.exec(message);
+    GET_COMMAND.lastIndex = 0;
 
-      // • Command : Get available reviews
-      else if (action === COMMANDS.DAY) {
-        return commandReviews(payload);
-      }
-
-      // • Command : Subscribe a repository to review
-      else if (action === COMMANDS.SUBSCRIBE) {
-        return commandSubscribe(params);
-      }
-
-      // • Command : Unsubscribe a repository
-      else if (action === COMMANDS.UNSUBSSCRIBE) {
-        return commandUnsubscribe(params);
-      }
-
-      // • Unknown command
-      else {
-        return getHelpCommands();
-      }
+    // • Command : Get the list of subscribed repository
+    if (action === COMMANDS.LIST) {
+      return commandList();
     }
+
+    // • Command : Get available reviews
+    if (action === COMMANDS.DAY) {
+      return commandReviews(payload);
+    }
+
+    // • Command : Subscribe a repository to review
+    if (action === COMMANDS.SUBSCRIBE) {
+      return commandSubscribe(params);
+    }
+
+    // • Command : Unsubscribe a repository
+    if (action === COMMANDS.UNSUBSSCRIBE) {
+      return commandUnsubscribe(params);
+    }
+
+    // • Unknown command
+    return getHelpCommands();
   } catch (error) {
     console.error(error);
 
