@@ -7,7 +7,7 @@ import { Handler } from 'aws-lambda';
 /*
  * Local Import
  */
-import { GET_COMMAND, COMMANDS } from '../constants/index';
+import { SUBCOMMAND, COMMANDS } from '../constants/index';
 
 // Commands
 import commandList from '../commands/list';
@@ -61,11 +61,13 @@ export const handler: Handler = async (event) => {
   try {
     // Init
     const payload = queryString.parse(event.body);
+    console.log({ payload });
+
     const message = payload.text.trim();
 
-    // Analyze payload
-    const [, action, params] = GET_COMMAND.exec(message);
-    GET_COMMAND.lastIndex = 0;
+    // Analyze
+    const [, action, params] = SUBCOMMAND.exec(message);
+    SUBCOMMAND.lastIndex = 0;
 
     // • Command : Get the list of subscribed repository
     if (action === COMMANDS.LIST) {

@@ -1,5 +1,5 @@
 /**
- * Description of all available commands
+ * Usage/Description of all available commands
  */
 const commands = [
   {
@@ -32,12 +32,17 @@ export default () => ({
   body: JSON.stringify(
     {
       response_type: 'ephemeral',
-      text: `Invalid command! :eyes:\nNeed some help with \`/reviews\` command?\n\n${commands
-        .map(
-          (command) =>
-            `${command.desc} :\n:point_right: \`${command.usage}\`\n\n`,
-        )
-        .join('')}`,
+      text: `Invalid command! :eyes:\nNeed some help with \`/reviews\` command?`,
+      attachments: [
+        ...commands.map((command) => ({
+          text: `${command.desc} :\n:point_right: \`${command.usage}\``,
+          mrkdwn_in: ['text'],
+        })),
+        {
+          footer:
+            '<https://github.com/AlexandreBourdeaudhui/Review|Code source>',
+        },
+      ],
     },
     null,
     2,

@@ -25,7 +25,8 @@ const getList = (repositories: Repositories[]) =>
     .join('')}`;
 
 /**
- * List all active subscriptions to reviews
+ * List all active subscriptions
+ * Usage: /reviews list
  */
 export default async () => {
   try {

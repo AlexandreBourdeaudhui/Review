@@ -14,7 +14,8 @@ const dynamoDb = new DynamoDB.DocumentClient();
 // const regExp = new RegExp('(?:https://)github.com[:/](.*)', 'g');
 
 /**
- *
+ * Subscribe to reviews for a repository
+ * Usage: /reviews subscribe organization/repository
  */
 export default async (params: string) => {
   // const matches = regExp.exec(repository);

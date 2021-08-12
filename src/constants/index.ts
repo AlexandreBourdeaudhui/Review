@@ -1,7 +1,7 @@
 /**
  * RegExp
  */
-export const GET_COMMAND = /([\w:]+)\s?(.*)?/gi;
+export const SUBCOMMAND = /([\w:]+)\s?(.*)?/gi;
 
 /**
  * Available commands

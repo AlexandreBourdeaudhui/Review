@@ -29,10 +29,6 @@ const listAvailableReviews = ({ availableReviews, data, payload }) =>
 /**
  * Check if we have any pull-requets that need to review
  * and for each repository with pull-requests to review, send message.
- *
- * Note to myself 📝 @see https://stackoverflow.com/a/37576787/8365373
- * for ... of         : Reading in sequence (more slower 🐌)
- * Promise.all(.map)  : Reading in parallel (more faster ⚡️)
  */
 const checkPullRequests = ({ payload, repositories }) =>
   repositories.map(async ({ repository }) => {
@@ -58,7 +54,8 @@ const checkPullRequests = ({ payload, repositories }) =>
   });
 
 /**
- *
+ * Show pull-requests that need review
+ * Usage: /reviews day
  */
 export default async (payload) => {
   try {
@@ -69,7 +66,6 @@ export default async (payload) => {
     //
     await Promise.all(checkPullRequests({ payload, repositories }));
 
-    // @TODO
     return {
       statusCode: 200,
       body: JSON.stringify(
@@ -85,3 +81,18 @@ export default async (payload) => {
     throw new Error(error);
   }
 };
+
+/**
+ * Note 📝
+ * for ... of         : Reading in sequence (more slower 🐌)
+ * Promise.all(.map)  : Reading in parallel (more faster ⚡️)
+ *
+ * @see https://stackoverflow.com/a/37576787/8365373
+ *
+ * -------------------------------------------------------------
+ *
+ * Slack has a 3000ms timeout, so if we don't respond within
+ * that window, and the Slack user who interacted with the app
+ * will see an error message (timeout)
+ * @see https://api.slack.com/interactivity/handling#message_responses
+ */
