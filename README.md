@@ -9,7 +9,7 @@ A serverless [Slack Slash Commands](https://api.slack.com/slash-commands) to get
 - Lastest [Node.js](https://nodejs.org) LTS
 - Install [Serverless framework](https://www.serverless.com/framework/docs/getting-started/).
 - Have an AWS account, and add the [AWS credentials](https://www.serverless.com/framework/docs/providers/aws/guide/credentials/) on `~/.aws/credentials` file.
-- Follow next steps (create GitHub token, install on Slack, and deploy)
+- Follow next steps
 
 ### Create GitHub token
 
@@ -25,12 +25,12 @@ A serverless [Slack Slash Commands](https://api.slack.com/slash-commands) to get
 - Choose `JSON` tab, and copy data from the `./manifest.json` file
 - Review summary and create the app
 - Install to Workspace
-- Click on `OAuth & Permissions`, view and copy the token (`xoxb-XXXX`) to a temporary place. You'll need it later. 
+- Click on `OAuth & Permissions`, view and copy the token (`xoxb-XXXX`) to a temporary place. You'll need it later.
 
 ### Deploy
 
 - Create an `.env` file and fill it with the properties of the` .env.example` file.
-- `serverless deploy` 
+- `serverless deploy --stage prod`
 - Once the deploy is successful, get the `endpoints` and update the `Request URL` of the Slash `/reviews` Command.
 
 ## Available commands
