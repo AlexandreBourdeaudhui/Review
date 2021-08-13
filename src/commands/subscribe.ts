@@ -18,42 +18,66 @@ const dynamoDb = new DynamoDB.DocumentClient();
  * Usage: /reviews subscribe organization/repository
  */
 export default async (params: string) => {
+  //
+  const repository = params.trim();
+  const isEmpty = repository === '';
+
   // const matches = regExp.exec(repository);
 
   // if (matches) {
   //   repository = matches[1];
   // }
 
-  //
-  const repository = params.trim();
-  const isEmpty = repository === '';
+  try {
+    //
+    if (isEmpty) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify(
+          {
+            response_type: 'ephemeral',
+            text: 'Please give a resource to subscribe.',
+          },
+          null,
+          2,
+        ),
+      };
+    }
 
-  //
-  if (!isEmpty) {
-    // if (!database.data.repositories.includes(repository)) {
-    await dynamoDb
-      .put({ TableName: process.env.DYNAMODB_TABLE, Item: { repository } })
-      .promise();
+    //
+    const databaseParams = {
+      TableName: process.env.DYNAMODB_TABLE,
+      Item: { repository },
+      ConditionExpression: 'attribute_not_exists(repository)',
+    };
+
+    await dynamoDb.put(databaseParams).promise();
 
     return {
       statusCode: 200,
       body: JSON.stringify(
         {
           response_type: 'in_channel',
-          text: `Subscribed to <https://github.com/${repository}|${repository}>. This repository will be scanned for availables reviews. To list all active subscriptions, you can type \`/reviews list\`.`,
+          text: `Subscribed to <https://github.com/${repository}|${repository}>. This repository will be scanned for availables reviews.`,
         },
         null,
         2,
       ),
     };
-    // }
-
-    // else {
-    // Repository already exist
-    // }
+  } catch (error) {
+    // Already exist
+    if (error.code === 'ConditionalCheckFailedException') {
+      return {
+        statusCode: 200,
+        body: JSON.stringify(
+          {
+            response_type: 'ephemeral',
+            text: `You're already subscribed to <https://github.com/${repository}|${repository}>.`,
+          },
+          null,
+          2,
+        ),
+      };
+    }
   }
-
-  // else {
-  // Please provide a repository to subscribe
-  // }
 };

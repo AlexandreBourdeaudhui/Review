@@ -28,12 +28,29 @@ export default async (params: string) => {
   const repository = params.trim();
   const isEmpty = repository === '';
 
-  //
-  if (!isEmpty) {
-    // if (database.data.repositories.includes(repository)) {
-    await dynamoDb
-      .delete({ TableName: process.env.DYNAMODB_TABLE, Key: { repository } })
-      .promise();
+  try {
+    //
+    if (isEmpty) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify(
+          {
+            response_type: 'ephemeral',
+            text: 'Please give a resource to unsubscribe.',
+          },
+          null,
+          2,
+        ),
+      };
+    }
+
+    //
+    const databaseParams = {
+      TableName: process.env.DYNAMODB_TABLE,
+      Key: { repository },
+    };
+
+    await dynamoDb.delete(databaseParams).promise();
 
     return {
       statusCode: 200,
@@ -46,14 +63,9 @@ export default async (params: string) => {
         2,
       ),
     };
-    // }
-
+  } catch (error) {
     // else {
     // Repository doesn’t exist
     // }
   }
-
-  // else {
-  // Please provide a repository to unsubscribe
-  // }
 };
