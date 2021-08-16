@@ -6,15 +6,14 @@ import { SUBCOMMAND } from '../constants/command';
 /**
  * Normalize text quotes
  */
-const normalizeQuotes = (text: string): string => {
-  return text
+const normalizeQuotes = (text: string): string =>
+  text
     .replace(/\u00AB/g, '"')
     .replace(/\u00BB/g, '"')
     .replace(/\u201C/g, '"')
     .replace(/\u201D/g, '"')
     .replace(/\u201E/g, '"')
     .replace(/\u201F/g, '"');
-};
 
 /**
  * Analyze text, and get the `subcommand` and `args`

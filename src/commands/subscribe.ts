@@ -2,6 +2,12 @@
  * Package Import
  */
 import { DynamoDB } from 'aws-sdk';
+import { APIGatewayProxyResult } from 'aws-lambda';
+
+/**
+ * Local Import
+ */
+import { respond } from '../utils/index';
 
 /*
  * Init
@@ -9,15 +15,10 @@ import { DynamoDB } from 'aws-sdk';
 const dynamoDb = new DynamoDB.DocumentClient();
 
 /**
- * Code
- */
-// const regExp = new RegExp('(?:https://)github.com[:/](.*)', 'g');
-
-/**
- * Subscribe to reviews for a repository
+ * Subscribe to reviews for a repository.
  * Usage: /reviews subscribe organization/repository
  */
-export default async (params: string) => {
+export default async (params: string): Promise<APIGatewayProxyResult> => {
   //
   const repository = params.trim();
   const isEmpty = repository === '';
@@ -31,53 +32,32 @@ export default async (params: string) => {
   try {
     //
     if (isEmpty) {
-      return {
-        statusCode: 200,
-        body: JSON.stringify(
-          {
-            response_type: 'ephemeral',
-            text: 'Please give a resource to subscribe.',
-          },
-          null,
-          2,
-        ),
-      };
+      return respond(200, {
+        response_type: 'ephemeral',
+        text: 'Please give a resource to subscribe.',
+      });
     }
 
     //
-    const databaseParams = {
-      TableName: process.env.DYNAMODB_TABLE,
-      Item: { repository },
-      ConditionExpression: 'attribute_not_exists(repository)',
-    };
+    await dynamoDb
+      .put({
+        TableName: process.env.DYNAMODB_TABLE,
+        Item: { repository },
+        ConditionExpression: 'attribute_not_exists(repository)',
+      })
+      .promise();
 
-    await dynamoDb.put(databaseParams).promise();
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify(
-        {
-          response_type: 'in_channel',
-          text: `Subscribed to <https://github.com/${repository}|${repository}>. This repository will be scanned for availables reviews.`,
-        },
-        null,
-        2,
-      ),
-    };
+    return respond(200, {
+      response_type: 'in_channel',
+      text: `Subscribed to <https://github.com/${repository}|${repository}>. This repository will be scanned for availables reviews.`,
+    });
   } catch (error) {
     // Already exist
     if (error.code === 'ConditionalCheckFailedException') {
-      return {
-        statusCode: 200,
-        body: JSON.stringify(
-          {
-            response_type: 'ephemeral',
-            text: `You're already subscribed to <https://github.com/${repository}|${repository}>.`,
-          },
-          null,
-          2,
-        ),
-      };
+      return respond(200, {
+        response_type: 'ephemeral',
+        text: `You're already subscribed to <https://github.com/${repository}|${repository}>.`,
+      });
     }
   }
 };

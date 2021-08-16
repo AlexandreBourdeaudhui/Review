@@ -1,5 +1,15 @@
 /**
- * Usage/Description of all available commands
+ * Package Import
+ */
+import { APIGatewayProxyResult } from 'aws-lambda';
+
+/**
+ * Local Import
+ */
+import { respond } from '../utils/index';
+
+/**
+ * Data
  */
 const commands = [
   {
@@ -25,26 +35,22 @@ const commands = [
 ];
 
 /**
- *
+ * Show a message usage/description for all available commands.
+ * Usage: /reviews help, /reviews unknowcommand, /reviews
  */
-export default () => ({
-  statusCode: 200,
-  body: JSON.stringify(
-    {
-      response_type: 'ephemeral',
-      text: `Invalid command! :eyes:\nNeed some help with \`/reviews\` command?`,
-      attachments: [
-        ...commands.map((command) => ({
-          text: `${command.desc} :\n:point_right: \`${command.usage}\``,
-          mrkdwn_in: ['text'],
-        })),
-        {
-          footer:
-            '<https://github.com/AlexandreBourdeaudhui/Review|View code source>',
-        },
-      ],
-    },
-    null,
-    2,
-  ),
-});
+export default (): APIGatewayProxyResult =>
+  respond(200, {
+    response_type: 'ephemeral',
+    text: `Invalid command! :eyes:\nNeed some help with \`/reviews\` command?\n\n${commands
+      .map(
+        (command) =>
+          `${command.desc} :\n:point_right: \`${command.usage}\`\n\n`,
+      )
+      .join('')}`,
+    attachments: [
+      {
+        footer:
+          '<https://github.com/AlexandreBourdeaudhui/Review|View code source>',
+      },
+    ],
+  });

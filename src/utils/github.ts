@@ -73,6 +73,6 @@ export const getAvailableReviews = async ({ owner, repo }: PullRequest) => {
     }),
   );
 
-  const pullRequestsReviewFiltered = pullRequestsReview.filter(Boolean);
-  return pullRequestsReviewFiltered;
+  // Remove undefined
+  return pullRequestsReview.filter(Boolean);
 };

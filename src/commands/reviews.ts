@@ -2,12 +2,14 @@
  * Package Import
  */
 import { DynamoDB } from 'aws-sdk';
+import { APIGatewayProxyResult } from 'aws-lambda';
 
 /*
  * Local Import
  */
 import { getAvailableReviews } from '../utils/github';
 import { postMessage } from '../utils/slack';
+import { respond } from '../utils/index';
 
 /*
  * Init
@@ -54,10 +56,10 @@ const checkPullRequests = ({ payload, repositories }) =>
   });
 
 /**
- * Show pull-requests that need review
+ * Show pull-requests that need review.
  * Usage: /reviews day
  */
-export default async (payload) => {
+export default async (payload): Promise<APIGatewayProxyResult> => {
   try {
     const { Items: repositories } = await dynamoDb
       .scan({ TableName: process.env.DYNAMODB_TABLE })
@@ -66,17 +68,10 @@ export default async (payload) => {
     //
     await Promise.all(checkPullRequests({ payload, repositories }));
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify(
-        {
-          response_type: 'in_channel',
-          text: ':robot_face: I don’t see any other reviews requests at this time.',
-        },
-        null,
-        2,
-      ),
-    };
+    return respond(200, {
+      response_type: 'in_channel',
+      text: ':robot_face: I don’t see any other reviews requests at this time.',
+    });
   } catch (error) {
     throw new Error(error);
   }
@@ -91,7 +86,7 @@ export default async (payload) => {
  *
  * -------------------------------------------------------------
  *
- * Slack has a 3000ms timeout, so if we don't respond within
+ * @TODO : Slack has a 3000ms timeout, so if we don't respond within
  * that window, and the Slack user who interacted with the app
  * will see an error message (timeout)
  * @see https://api.slack.com/interactivity/handling#message_responses

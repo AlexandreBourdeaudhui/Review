@@ -2,6 +2,12 @@
  * Package Import
  */
 import { DynamoDB } from 'aws-sdk';
+import { APIGatewayProxyResult } from 'aws-lambda';
+
+/**
+ * Local Import
+ */
+import { respond } from '../utils/index';
 
 /*
  * Init
@@ -9,14 +15,9 @@ import { DynamoDB } from 'aws-sdk';
 const dynamoDb = new DynamoDB.DocumentClient();
 
 /**
- * Types
- */
-type Repositories = { repository: string };
-
-/**
  *
  */
-const getList = (repositories: Repositories[]) =>
+const getList = (repositories: { repository: string }[]) =>
   `Subscribed to the following repository : \n\n${repositories
     .map(
       ({ repository }) =>
@@ -25,26 +26,19 @@ const getList = (repositories: Repositories[]) =>
     .join('')}`;
 
 /**
- * List all active subscriptions
+ * List all active subscriptions.
  * Usage: /reviews list
  */
-export default async () => {
+export default async (): Promise<APIGatewayProxyResult> => {
   try {
     const { Items } = await dynamoDb
       .scan({ TableName: process.env.DYNAMODB_TABLE })
       .promise();
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify(
-        {
-          response_type: 'in_channel',
-          text: getList(Items),
-        },
-        null,
-        2,
-      ),
-    };
+    return respond(200, {
+      response_type: 'in_channel',
+      text: getList(Items),
+    });
   } catch (error) {
     throw new Error(error);
   }
