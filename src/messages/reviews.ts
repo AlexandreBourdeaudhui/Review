@@ -14,7 +14,7 @@ interface PullRequest {
 /**
  * Code
  */
-export const followRepository = (repository: string): string =>
+export const followedRepository = (repository: string): string =>
   `Available reviews for the following repository <https://github.com/${repository}|${repository}> :arrow_heading_down:`;
 
 export const pullRequestReview = ({ html_url, title }: PullRequest): string =>

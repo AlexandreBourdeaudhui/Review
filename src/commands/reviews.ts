@@ -34,7 +34,7 @@ const verifyPullRequests = ({ payload, repositories }) =>
         // For each repository with pull-requests to review, send message.
         const { data } = await postMessage({
           channel: payload.channel_id,
-          text: messages.followRepository(repository),
+          text: messages.followedRepository(repository),
         });
 
         // List all the pull-requests to review, in Slack thread.
