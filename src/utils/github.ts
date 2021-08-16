@@ -43,7 +43,7 @@ export const getPullRequetsHasAlreadyReviews = async ({
   return data.some(
     (pullRequest) =>
       pullRequest.state === PULL_REQUEST_STATE.APPROVED ||
-      pullRequest.state === PULL_REQUEST_STATE.DENIED,
+      pullRequest.state === PULL_REQUEST_STATE.CHANGES_REQUESTED,
   );
 };
 
@@ -55,7 +55,7 @@ export const getAvailableReviews = async ({ owner, repo }: PullRequest) => {
   const { data } = await octokit.request('GET /repos/{owner}/{repo}/pulls', {
     owner,
     repo,
-    state: 'open',
+    state: PULL_REQUEST_STATE.OPEN,
   });
 
   const pullRequestsReview = await Promise.all(

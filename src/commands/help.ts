@@ -6,6 +6,7 @@ import { APIGatewayProxyResult } from 'aws-lambda';
 /**
  * Local Import
  */
+import * as messages from '../messages/help';
 import { respond } from '../utils/index';
 
 /**
@@ -39,18 +40,4 @@ const commands = [
  * Usage: /reviews help, /reviews unknowcommand, /reviews
  */
 export default (): APIGatewayProxyResult =>
-  respond(200, {
-    response_type: 'ephemeral',
-    text: `Invalid command! :eyes:\nNeed some help with \`/reviews\` command?\n\n${commands
-      .map(
-        (command) =>
-          `${command.desc} :\n:point_right: \`${command.usage}\`\n\n`,
-      )
-      .join('')}`,
-    attachments: [
-      {
-        footer:
-          '<https://github.com/AlexandreBourdeaudhui/Review|View code source>',
-      },
-    ],
-  });
+  respond(200, messages.allCommands(commands));

@@ -7,6 +7,7 @@ import { APIGatewayProxyResult } from 'aws-lambda';
 /**
  * Local Import
  */
+import * as messages from '../messages/subscribe';
 import { respond } from '../utils/index';
 
 /*
@@ -30,26 +31,19 @@ export default async (params: string): Promise<APIGatewayProxyResult> => {
   const isEmpty = repository === '';
 
   try {
-    //
     if (isEmpty) {
-      return respond(200, {
-        response_type: 'ephemeral',
-        text: 'Please give a resource to unsubscribe.',
-      });
+      return respond(200, messages.emptyRessource());
     }
 
     //
-    const databaseParams = {
-      TableName: process.env.DYNAMODB_TABLE,
-      Key: { repository },
-    };
+    await dynamoDb
+      .delete({
+        TableName: process.env.DYNAMODB_TABLE,
+        Key: { repository },
+      })
+      .promise();
 
-    await dynamoDb.delete(databaseParams).promise();
-
-    return respond(200, {
-      response_type: 'in_channel',
-      text: `Unsubscribed from <https://github.com/${repository}|${repository}>.`,
-    });
+    return respond(200, messages.unsubscribed(repository));
   } catch (error) {
     // else {
     // Repository doesn’t exist

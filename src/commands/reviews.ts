@@ -7,6 +7,9 @@ import { APIGatewayProxyResult } from 'aws-lambda';
 /*
  * Local Import
  */
+import * as messages from '../messages/reviews';
+
+// Helpers
 import { getAvailableReviews } from '../utils/github';
 import { postMessage } from '../utils/slack';
 import { respond } from '../utils/index';
@@ -17,39 +20,32 @@ import { respond } from '../utils/index';
 const dynamoDb = new DynamoDB.DocumentClient();
 
 /**
- * List all the pull-requests to review, in Slack thread.
- */
-const listAvailableReviews = ({ availableReviews, data, payload }) =>
-  availableReviews.map(({ html_url, title }) =>
-    postMessage({
-      channel: payload.channel_id,
-      thread_ts: data.message.ts,
-      text: `<${html_url}|${title}>`,
-    }),
-  );
-
-/**
  * Check if we have any pull-requets that need to review
- * and for each repository with pull-requests to review, send message.
  */
-const checkPullRequests = ({ payload, repositories }) =>
+const verifyPullRequests = ({ payload, repositories }) =>
   repositories.map(async ({ repository }) => {
     const [owner, repo] = repository.split('/');
 
     if (owner && repo) {
       const availableReviews = await getAvailableReviews({ owner, repo });
-      console.log(
-        `${repository} has ${availableReviews.length} pull-request to review`,
-      );
+      console.log(`${repository} has ${availableReviews.length} PR to review`);
 
       if (availableReviews.length) {
+        // For each repository with pull-requests to review, send message.
         const { data } = await postMessage({
           channel: payload.channel_id,
-          text: `Available reviews for the following repository <https://github.com/${repository}|${repository}> :arrow_heading_down:`,
+          text: messages.followRepository(repository),
         });
 
+        // List all the pull-requests to review, in Slack thread.
         await Promise.all(
-          listAvailableReviews({ data, payload, availableReviews }),
+          availableReviews.map((availableReview) =>
+            postMessage({
+              channel: payload.channel_id,
+              thread_ts: data.message.ts,
+              text: messages.pullRequestReview(availableReview),
+            }),
+          ),
         );
       }
     }
@@ -66,28 +62,14 @@ export default async (payload): Promise<APIGatewayProxyResult> => {
       .promise();
 
     //
-    await Promise.all(checkPullRequests({ payload, repositories }));
+    await Promise.all(verifyPullRequests({ payload, repositories }));
 
-    return respond(200, {
-      response_type: 'in_channel',
-      text: ':robot_face: I don’t see any other reviews requests at this time.',
-    });
+    // @TODO : Slack has a 3000ms timeout, so if we don't respond within that
+    // window, and the Slack user who interacted with the app will see an error
+    // message (timeout), see the following link.
+    // https://api.slack.com/interactivity/handling#message_responses
+    return respond(200, messages.clearReviews());
   } catch (error) {
     throw new Error(error);
   }
 };
-
-/**
- * Note 📝
- * for ... of         : Reading in sequence (more slower 🐌)
- * Promise.all(.map)  : Reading in parallel (more faster ⚡️)
- *
- * @see https://stackoverflow.com/a/37576787/8365373
- *
- * -------------------------------------------------------------
- *
- * @TODO : Slack has a 3000ms timeout, so if we don't respond within
- * that window, and the Slack user who interacted with the app
- * will see an error message (timeout)
- * @see https://api.slack.com/interactivity/handling#message_responses
- */

@@ -7,6 +7,7 @@ import { APIGatewayProxyResult } from 'aws-lambda';
 /**
  * Local Import
  */
+import * as messages from '../messages/subscribe';
 import { respond } from '../utils/index';
 
 /*
@@ -30,12 +31,8 @@ export default async (params: string): Promise<APIGatewayProxyResult> => {
   // }
 
   try {
-    //
     if (isEmpty) {
-      return respond(200, {
-        response_type: 'ephemeral',
-        text: 'Please give a resource to subscribe.',
-      });
+      return respond(200, messages.emptyRessource());
     }
 
     //
@@ -47,17 +44,11 @@ export default async (params: string): Promise<APIGatewayProxyResult> => {
       })
       .promise();
 
-    return respond(200, {
-      response_type: 'in_channel',
-      text: `Subscribed to <https://github.com/${repository}|${repository}>. This repository will be scanned for availables reviews.`,
-    });
+    return respond(200, messages.subscribed(repository));
   } catch (error) {
     // Already exist
     if (error.code === 'ConditionalCheckFailedException') {
-      return respond(200, {
-        response_type: 'ephemeral',
-        text: `You're already subscribed to <https://github.com/${repository}|${repository}>.`,
-      });
+      return respond(200, messages.alreadySubscribed(repository));
     }
   }
 };

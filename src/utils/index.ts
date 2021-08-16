@@ -6,7 +6,7 @@ import { APIGatewayProxyResult } from 'aws-lambda';
 /**
  * Types
  */
-interface Body {
+export interface Body {
   attachments?: { footer?: string }[];
   message?: string;
   text: string;
@@ -21,5 +21,6 @@ export const respond = (
   body: Body,
 ): APIGatewayProxyResult => ({
   statusCode,
+  headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify(body, null, 2),
 });

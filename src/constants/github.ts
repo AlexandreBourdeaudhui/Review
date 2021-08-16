@@ -8,6 +8,5 @@ export const GITHUB_REPO = /^(?:https:\/\/github.com\/)?([^/]+)\/([^/]+)$/;
  */
 export enum PULL_REQUEST_STATE {
   APPROVED = 'APPROVED',
-  DENIED = 'DENIED',
-  REVIEW = 'REVIEW',
+  CHANGES_REQUESTED = 'CHANGES_REQUESTED',
 }
