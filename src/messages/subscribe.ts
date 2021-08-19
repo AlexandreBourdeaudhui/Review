@@ -1,7 +1,7 @@
 /**
  * Local Import
  */
-import { Body } from '../utils';
+import { Body } from '../@types';
 
 /**
  * Code

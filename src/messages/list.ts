@@ -1,14 +1,7 @@
 /**
  * Local Import
  */
-import { Body } from '../utils';
-
-/**
- * Types
- */
-interface Repository {
-  repository: string;
-}
+import { Body, Repository } from '../@types';
 
 /**
  * Code

@@ -1,22 +1,12 @@
 /*
  * Package Import
  */
-import axios, { AxiosResponse, Method } from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 /**
- * Types
+ * Local Import
  */
-interface Payload {
-  method?: Method;
-  params: ParamsSlack;
-  request: string;
-}
-
-interface ParamsSlack {
-  channel: string;
-  text: string;
-  thread_ts?: string;
-}
+import { PayloadSlack, ParamsSlack } from '../@types';
 
 /**
  * Wrapper call API Slack
@@ -25,7 +15,7 @@ export const slackWrapper = ({
   method = 'POST',
   params,
   request,
-}: Payload): Promise<AxiosResponse> =>
+}: PayloadSlack): Promise<AxiosResponse> =>
   axios({
     method,
     url: `https://slack.com/api/${request}`,

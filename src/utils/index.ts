@@ -4,14 +4,9 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
 
 /**
- * Types
+ * Local Import
  */
-export interface Body {
-  attachments?: { color?: string; footer?: string; mrkdwn_in: string[] }[];
-  message?: string;
-  text: string;
-  response_type: 'ephemeral' | 'in_channel';
-}
+import { Body } from '../@types';
 
 /**
  *

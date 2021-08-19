@@ -1,15 +1,7 @@
 /**
  * Local Import
  */
-import { Body } from '../utils';
-
-/**
- * Types
- */
-interface PullRequest {
-  html_url: string;
-  title: string;
-}
+import { Body, PullRequest } from '../@types';
 
 /**
  * Code

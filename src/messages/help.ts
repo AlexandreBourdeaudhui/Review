@@ -1,15 +1,7 @@
 /**
  * Local Import
  */
-import { Body } from '../utils';
-
-/**
- * Types
- */
-interface Commands {
-  usage: string;
-  desc: string;
-}
+import { Body, Commands } from '../@types';
 
 /**
  * Code
