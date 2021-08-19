@@ -8,7 +8,7 @@ import { APIGatewayProxyResult } from 'aws-lambda';
  * Local Import
  */
 import * as messages from '../messages/list';
-import { respond } from '../utils/index';
+import { respond } from '../utils/lambda';
 
 /*
  * Init

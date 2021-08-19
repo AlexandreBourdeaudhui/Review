@@ -12,7 +12,7 @@ import * as messages from '../messages/reviews';
 // Helpers
 import { getAvailableReviews } from '../utils/github';
 import { postMessage } from '../utils/slack';
-import { respond } from '../utils/index';
+import { respond } from '../utils/lambda';
 
 /*
  * Init

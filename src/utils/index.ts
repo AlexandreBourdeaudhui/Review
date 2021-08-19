@@ -1,21 +1,11 @@
 /**
- * Package Import
+ * Normalize text quotes
  */
-import { APIGatewayProxyResult } from 'aws-lambda';
-
-/**
- * Local Import
- */
-import { Body } from '../@types';
-
-/**
- *
- */
-export const respond = (
-  statusCode: number,
-  body: Body,
-): APIGatewayProxyResult => ({
-  statusCode,
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(body, null, 2),
-});
+export const normalizeQuotes = (text: string): string =>
+  text
+    .replace(/\u00AB/g, '"')
+    .replace(/\u00BB/g, '"')
+    .replace(/\u201C/g, '"')
+    .replace(/\u201D/g, '"')
+    .replace(/\u201E/g, '"')
+    .replace(/\u201F/g, '"');

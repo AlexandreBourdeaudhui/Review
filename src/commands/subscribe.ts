@@ -11,7 +11,7 @@ import * as messages from '../messages/subscribe';
 
 // Helpers
 import { getRepositoryData } from '../utils/github';
-import { respond } from '../utils/index';
+import { respond } from '../utils/lambda';
 
 /*
  * Init
