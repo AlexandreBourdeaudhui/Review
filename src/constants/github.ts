@@ -1,7 +1,8 @@
 /**
  * RegExp GitHub repository
  */
-export const GITHUB_REPO = /^(?:https:\/\/github.com\/)?([^/]+)\/([^/]+)$/;
+export const GITHUB_REPO_REGEX =
+  /^(?:https:\/\/github.com\/)?([^/]+)\/([^/]+)$/;
 
 /**
  * All possible state for a pull-request

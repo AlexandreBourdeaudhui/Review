@@ -6,12 +6,12 @@ import { Octokit } from '@octokit/core';
 /*
  * Local Import
  */
-import { PULL_REQUEST_STATE } from '../constants/github';
+import { GITHUB_REPO_REGEX, PULL_REQUEST_STATE } from '../constants/github';
 
 /**
  * Types
  */
-interface PullRequest {
+interface RepositoryData {
   owner: string;
   repo: string;
   pull_number?: number;
@@ -30,7 +30,7 @@ export const getPullRequetsHasAlreadyReviews = async ({
   owner,
   repo,
   pull_number,
-}: PullRequest): Promise<boolean> => {
+}: RepositoryData): Promise<boolean> => {
   const { data } = await octokit.request(
     'GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews',
     {
@@ -51,7 +51,7 @@ export const getPullRequetsHasAlreadyReviews = async ({
  * Get all pull-requests from a GitHub repository.
  * @doc https://docs.github.com/en/rest/reference/pulls#list-pull-requests
  */
-export const getAvailableReviews = async ({ owner, repo }: PullRequest) => {
+export const getAvailableReviews = async ({ owner, repo }: RepositoryData) => {
   const { data } = await octokit.request('GET /repos/{owner}/{repo}/pulls', {
     owner,
     repo,
@@ -73,6 +73,39 @@ export const getAvailableReviews = async ({ owner, repo }: PullRequest) => {
     }),
   );
 
-  // Remove undefined
+  // Remove undefined and return pull—requests
   return pullRequestsReview.filter(Boolean);
+};
+
+/**
+ * Get repository data
+ * @doc https://docs.github.com/en/rest/reference/repos#get-a-repository
+ */
+export const getRepositoryData = async (repository: string) => {
+  let owner;
+  let repo;
+
+  // e.g : owner/repo
+  // match: ['owner', 'repo']
+  const repoSplit = repository.split('/');
+  owner = repoSplit[0];
+  repo = repoSplit[1];
+
+  if (repository.startsWith('https://')) {
+    // e.g : for a repository https://github.com/owner/repo
+    // match: ['https://github.com/owner/repo','owner','repo']
+    const match = new RegExp(GITHUB_REPO_REGEX).exec(repository);
+
+    if (match) {
+      owner = match[1];
+      repo = match[2];
+    }
+  }
+
+  const { data } = await octokit.request('GET /repos/{owner}/{repo}', {
+    owner,
+    repo,
+  });
+
+  return data;
 };

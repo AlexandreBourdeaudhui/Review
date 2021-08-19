@@ -8,6 +8,9 @@ import { APIGatewayProxyResult } from 'aws-lambda';
  * Local Import
  */
 import * as messages from '../messages/subscribe';
+
+// Helpers
+import { getRepositoryData } from '../utils/github';
 import { respond } from '../utils/index';
 
 /*
@@ -24,31 +27,33 @@ export default async (params: string): Promise<APIGatewayProxyResult> => {
   const repository = params.trim();
   const isEmpty = repository === '';
 
-  // const matches = regExp.exec(repository);
-
-  // if (matches) {
-  //   repository = matches[1];
-  // }
-
   try {
     if (isEmpty) {
       return respond(200, messages.emptyRessource());
     }
 
-    //
+    // Verify if the repository exist on GitHub and get repository data
+    const { full_name } = await getRepositoryData(repository);
+
+    // Save in Database
     await dynamoDb
       .put({
         TableName: process.env.DYNAMODB_TABLE,
-        Item: { repository },
+        Item: { repository: full_name },
         ConditionExpression: 'attribute_not_exists(repository)',
       })
       .promise();
 
     return respond(200, messages.subscribed(repository));
   } catch (error) {
-    // Already exist
+    // Already exist in database
     if (error.code === 'ConditionalCheckFailedException') {
       return respond(200, messages.alreadySubscribed(repository));
+    }
+
+    // Ressource not found
+    if (error.status === 404) {
+      return respond(200, messages.notFound(repository));
     }
   }
 };

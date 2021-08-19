@@ -25,3 +25,8 @@ export const unsubscribed = (repository: string): Body => ({
   response_type: 'in_channel',
   text: `Unsubscribed from <https://github.com/${repository}|${repository}>.`,
 });
+
+export const notFound = (resource: string): Body => ({
+  response_type: 'ephemeral',
+  text: `Could not find this resource: ${resource}.`,
+});

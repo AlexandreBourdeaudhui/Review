@@ -20,7 +20,8 @@ import { respond } from '../utils/index';
 const dynamoDb = new DynamoDB.DocumentClient();
 
 /**
- * Check if we have any pull-requets that need to review
+ * Verify if we have a pull-requets that need to be reviewed
+ * And, display it in Slack
  */
 const verifyPullRequests = ({ payload, repositories }) =>
   repositories.map(async ({ repository }) => {
@@ -61,14 +62,14 @@ export default async (payload): Promise<APIGatewayProxyResult> => {
       .scan({ TableName: process.env.DYNAMODB_TABLE })
       .promise();
 
-    //
+    // Verify if we have a pull-requets that need to be reviewed
     await Promise.all(verifyPullRequests({ payload, repositories }));
 
     // @TODO : Slack has a 3000ms timeout, so if we don't respond within that
     // window, and the Slack user who interacted with the app will see an error
     // message (timeout), see the following link.
     // https://api.slack.com/interactivity/handling#message_responses
-    return respond(200, messages.clearReviews());
+    return respond(200, messages.noMoreReviews());
   } catch (error) {
     throw new Error(error);
   }

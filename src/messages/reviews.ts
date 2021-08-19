@@ -20,7 +20,7 @@ export const followedRepository = (repository: string): string =>
 export const pullRequestReview = ({ html_url, title }: PullRequest): string =>
   `:arrow_right: <${html_url}|${title}>`;
 
-export const clearReviews = (): Body => ({
+export const noMoreReviews = (): Body => ({
   response_type: 'in_channel',
   text: ':robot_face: I don’t see any other reviews requests at this time.',
 });
