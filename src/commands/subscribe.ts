@@ -23,7 +23,7 @@ const dynamoDb = new DynamoDB.DocumentClient();
  * Usage: /reviews subscribe organization/repository
  */
 export default async (params: string): Promise<APIGatewayProxyResult> => {
-  //
+  // Params
   const repository = params.trim();
   const isEmpty = repository === '';
 
@@ -35,7 +35,7 @@ export default async (params: string): Promise<APIGatewayProxyResult> => {
     // Verify if the repository exist on GitHub and get repository data
     const { full_name } = await getRepositoryData(repository);
 
-    // Save in Database
+    // Save item in Database
     await dynamoDb
       .put({
         TableName: process.env.DYNAMODB_TABLE,

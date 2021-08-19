@@ -8,6 +8,9 @@ import { APIGatewayProxyResult } from 'aws-lambda';
  * Local Import
  */
 import * as messages from '../messages/subscribe';
+
+// Helpers
+import { getRepositoryData } from '../utils/github';
 import { respond } from '../utils/index';
 
 /*
@@ -20,13 +23,7 @@ const dynamoDb = new DynamoDB.DocumentClient();
  * Usage: /reviews unsubscribe organization/repository
  */
 export default async (params: string): Promise<APIGatewayProxyResult> => {
-  // const matches = regExp.exec(repository);
-
-  // if (matches) {
-  //   repository = matches[1];
-  // }
-
-  //
+  // Params
   const repository = params.trim();
   const isEmpty = repository === '';
 
@@ -35,18 +32,24 @@ export default async (params: string): Promise<APIGatewayProxyResult> => {
       return respond(200, messages.emptyRessource());
     }
 
-    //
+    // Verify if the repository exist on GitHub and get repository data
+    const { full_name } = await getRepositoryData(repository);
+
+    // Delete item in Database
     await dynamoDb
       .delete({
         TableName: process.env.DYNAMODB_TABLE,
-        Key: { repository },
+        Key: { repository: full_name },
       })
       .promise();
 
     return respond(200, messages.unsubscribed(repository));
   } catch (error) {
-    // else {
-    // Repository doesn’t exist
-    // }
+    // Repository doesn’t exist in database
+
+    // Ressource not found
+    if (error.status === 404) {
+      return respond(200, messages.notFound(repository));
+    }
   }
 };
