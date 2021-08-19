@@ -9,6 +9,7 @@ import { Body } from '../utils';
 export const emptyRessource = (): Body => ({
   response_type: 'ephemeral',
   text: 'Please give a resource to subscribe.',
+  attachments: [{ color: 'danger', mrkdwn_in: ['text'] }],
 });
 
 export const subscribed = (repository: string): Body => ({
@@ -29,4 +30,5 @@ export const unsubscribed = (repository: string): Body => ({
 export const notFound = (resource: string): Body => ({
   response_type: 'ephemeral',
   text: `Could not find this resource: ${resource}.`,
+  attachments: [{ color: 'danger', mrkdwn_in: ['text'] }],
 });

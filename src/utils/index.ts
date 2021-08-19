@@ -7,7 +7,7 @@ import { APIGatewayProxyResult } from 'aws-lambda';
  * Types
  */
 export interface Body {
-  attachments?: { footer?: string }[];
+  attachments?: { color?: string; footer?: string; mrkdwn_in: string[] }[];
   message?: string;
   text: string;
   response_type: 'ephemeral' | 'in_channel';
