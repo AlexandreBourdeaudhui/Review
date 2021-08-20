@@ -1,7 +1,7 @@
 /**
  * Local Import
  */
-import { Body, PullRequest } from '../@types';
+import { Body, PullRequest } from '../types';
 
 /**
  * Code

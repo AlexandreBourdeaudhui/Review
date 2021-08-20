@@ -6,7 +6,7 @@ import { Octokit } from '@octokit/core';
 /*
  * Local Import
  */
-import { RepositoryData } from '../@types';
+import { RepositoryData } from '../types';
 import { GITHUB_REPO_REGEX, PULL_REQUEST_STATE } from '../constants/github';
 
 /**

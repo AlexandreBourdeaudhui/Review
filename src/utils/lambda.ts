@@ -6,7 +6,7 @@ import { APIGatewayProxyResult } from 'aws-lambda';
 /**
  * Local Import
  */
-import { Body } from '../@types';
+import { Body } from '../types';
 
 /**
  *

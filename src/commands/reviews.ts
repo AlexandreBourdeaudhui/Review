@@ -14,6 +14,9 @@ import { getAvailableReviews } from '../utils/github';
 import { postMessage } from '../utils/slack';
 import { respond } from '../utils/lambda';
 
+// Types
+import { Repositories, SlashCommand } from '../types';
+
 /*
  * Init
  */
@@ -23,7 +26,13 @@ const dynamoDb = new DynamoDB.DocumentClient();
  * Verify if we have a pull-requets that need to be reviewed
  * And, display it in Slack
  */
-const verifyPullRequests = ({ payload, repositories }) =>
+const verifyPullRequests = ({
+  payload,
+  repositories,
+}: {
+  payload: SlashCommand;
+  repositories: Repositories[];
+}) =>
   repositories.map(async ({ repository }) => {
     const [owner, repo] = repository.split('/');
 
@@ -56,7 +65,9 @@ const verifyPullRequests = ({ payload, repositories }) =>
  * Show pull-requests that need review.
  * Usage: /reviews day
  */
-export default async (payload): Promise<APIGatewayProxyResult> => {
+export default async (
+  payload: SlashCommand,
+): Promise<APIGatewayProxyResult> => {
   try {
     const { Items: repositories } = await dynamoDb
       .scan({ TableName: process.env.DYNAMODB_TABLE })

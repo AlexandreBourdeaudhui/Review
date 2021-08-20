@@ -6,7 +6,7 @@ import axios, { AxiosResponse } from 'axios';
 /**
  * Local Import
  */
-import { PayloadSlack, ParamsSlack } from '../@types';
+import { PayloadSlack, ParamsSlack } from '../types';
 
 /**
  * Wrapper call API Slack

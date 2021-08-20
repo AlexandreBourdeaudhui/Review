@@ -1,12 +1,12 @@
 /**
  * Local Import
  */
-import { Body, Repository } from '../@types';
+import { Body, Repositories } from '../types';
 
 /**
  * Code
  */
-export const repositoryList = (repositories: Repository[]): Body => ({
+export const repositoryList = (repositories: Repositories[]): Body => ({
   response_type: 'in_channel',
   text: `Subscribed to the following repository : \n\n${repositories
     .map(
