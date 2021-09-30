@@ -17,6 +17,9 @@ import commandUnsubscribe from '../commands/unsubscribe';
 import getSubcommand from '../utils/command';
 import { COMMANDS } from '../constants/command';
 
+// Types
+// import { SlashCommand } from '../types';
+
 /**
  *
  */
@@ -43,7 +46,6 @@ export const handler: Handler = async (event) => {
   try {
     const payload = queryString.parse(event.body);
     const [subcommand, params] = getSubcommand(payload.text);
-    console.log({ payload });
 
     // • Command : Get the list of subscribed repository
     if (subcommand === COMMANDS.LIST) {

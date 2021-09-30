@@ -1,10 +1,11 @@
 /**
- * Local Import
+ * Package Import Import
  */
 import { Method } from 'axios';
+import { Endpoints } from '@octokit/types';
 
 /**
- * Types
+ * Slack
  */
 export interface SlashCommand {
   token: string;
@@ -37,21 +38,6 @@ export interface Commands {
   desc: string;
 }
 
-export interface Repositories {
-  repository?: string;
-}
-
-export interface RepositoryData {
-  owner: string;
-  repo: string;
-  pull_number?: number;
-}
-
-export interface PullRequest {
-  html_url: string;
-  title: string;
-}
-
 export interface PayloadSlack {
   method?: Method;
   params: ParamsSlack;
@@ -62,4 +48,28 @@ export interface ParamsSlack {
   channel: string;
   text: string;
   thread_ts?: string;
+}
+
+/**
+ * Github
+ */
+export type ReviewsParams =
+  Endpoints['GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews']['parameters'];
+
+export type PullRequestParams =
+  Endpoints['GET /repos/{owner}/{repo}/pulls']['parameters'];
+
+export type PullRequestData =
+  Endpoints['GET /repos/{owner}/{repo}/pulls']['response']['data'];
+
+export type RepositoryData =
+  Endpoints['GET /repos/{owner}/{repo}']['response']['data'];
+
+export interface Repositories {
+  repository?: string;
+}
+
+export interface PullRequest {
+  html_url: string;
+  title: string;
 }

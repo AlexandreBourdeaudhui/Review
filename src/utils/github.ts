@@ -6,7 +6,12 @@ import { Octokit } from '@octokit/core';
 /*
  * Local Import
  */
-import { RepositoryData } from '../types';
+import {
+  PullRequestData,
+  PullRequestParams,
+  RepositoryData,
+  ReviewsParams,
+} from '../types';
 import { GITHUB_REPO_REGEX, PULL_REQUEST_STATE } from '../constants/github';
 
 /**
@@ -22,7 +27,7 @@ export const getPullRequetsHasAlreadyReviews = async ({
   owner,
   repo,
   pull_number,
-}: RepositoryData): Promise<boolean> => {
+}: ReviewsParams): Promise<boolean> => {
   const { data } = await octokit.request(
     'GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews',
     {
@@ -43,7 +48,10 @@ export const getPullRequetsHasAlreadyReviews = async ({
  * Get all pull-requests from a GitHub repository.
  * @doc https://docs.github.com/en/rest/reference/pulls#list-pull-requests
  */
-export const getAvailableReviews = async ({ owner, repo }: RepositoryData) => {
+export const getAvailableReviews = async ({
+  owner,
+  repo,
+}: PullRequestParams): Promise<PullRequestData> => {
   const { data } = await octokit.request('GET /repos/{owner}/{repo}/pulls', {
     owner,
     repo,
@@ -73,7 +81,9 @@ export const getAvailableReviews = async ({ owner, repo }: RepositoryData) => {
  * Get repository data
  * @doc https://docs.github.com/en/rest/reference/repos#get-a-repository
  */
-export const getRepositoryData = async (repository: string) => {
+export const getRepositoryData = async (
+  repository: string,
+): Promise<RepositoryData> => {
   let owner;
   let repo;
 
