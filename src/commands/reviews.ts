@@ -77,12 +77,14 @@ export default async ({
       .promise();
 
     // Verify if we have a pull-requets that need to be reviewed
-    await Promise.all(
-      verifyPullRequests({
-        payload,
-        repositories,
-      }),
-    );
+    if (Array.isArray(repositories) && repositories.length > 0) {
+      await Promise.all(
+        verifyPullRequests({
+          payload,
+          repositories,
+        }),
+      );
+    }
 
     return {
       statusCode: 200,
