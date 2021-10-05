@@ -1,12 +1,12 @@
 /**
  * Local Import
  */
-import { Body, Commands } from '../types';
+import { Commands, ResponseSlack } from '../types';
 
 /**
  * Code
  */
-export const allCommands = (commands: Commands[]): Body => ({
+export const allCommands = (commands: Commands[]): ResponseSlack => ({
   response_type: 'ephemeral',
   text: `Invalid command! :eyes:\nNeed some help with \`/reviews\` command?\n\n${commands
     .map(
@@ -15,7 +15,8 @@ export const allCommands = (commands: Commands[]): Body => ({
     .join('')}`,
   attachments: [
     {
-      footer: '<https://github.com/AlexandreBourdeaudhui/Review|Code source>',
+      footer:
+        '<https://github.com/AlexandreBourdeaudhui/Review|See code source on GitHub>',
     },
   ],
 });

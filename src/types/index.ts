@@ -1,8 +1,15 @@
 /**
  * Package Import Import
  */
-import { Method } from 'axios';
 import { Endpoints } from '@octokit/types';
+
+/**
+ * Apps
+ */
+export interface IActionParams {
+  params: string;
+  payload: SlashCommand;
+}
 
 /**
  * Slack
@@ -26,7 +33,17 @@ export interface SlashCommand {
   is_enterprise_install?: string; // This should be a boolean, but payload for commands gives string 'true'
 }
 
-export interface Body {
+export interface SlackBlock {
+  type: string;
+  text: {
+    type: string;
+    text: string;
+  };
+}
+
+export type SlackBlocks = Array<SlackBlock>;
+
+export interface ResponseSlack {
   attachments?: { color?: string; footer?: string; mrkdwn_in?: string[] }[];
   message?: string;
   text: string;
@@ -38,15 +55,10 @@ export interface Commands {
   desc: string;
 }
 
-export interface PayloadSlack {
-  method?: Method;
-  params: ParamsSlack;
-  request: string;
-}
-
 export interface ParamsSlack {
+  blocks?: SlackBlocks;
   channel: string;
-  text: string;
+  text?: string;
   thread_ts?: string;
 }
 
@@ -71,5 +83,6 @@ export interface Repositories {
 
 export interface PullRequest {
   html_url: string;
+  number: number;
   title: string;
 }

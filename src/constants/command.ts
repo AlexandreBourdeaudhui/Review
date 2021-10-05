@@ -1,12 +1,12 @@
 /**
  * RegExp
  */
-export const SUBCOMMAND = /^(\w+) *(.*)$/;
+export const SUBCOMMAND_REGEX = /^(\w+) *(.*)$/;
 
 /**
  * Available commands
  */
-export enum COMMANDS {
+export enum SUBCOMMANDS {
   DAY = 'day',
   LIST = 'list',
   SUBSCRIBE = 'subscribe',

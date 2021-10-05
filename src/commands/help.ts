@@ -7,7 +7,6 @@ import { APIGatewayProxyResult } from 'aws-lambda';
  * Local Import
  */
 import * as messages from '../messages/help';
-import { respond } from '../utils/lambda';
 
 /**
  * Data
@@ -39,5 +38,8 @@ const commands = [
  * Show a message usage/description for all available commands.
  * Usage: /reviews help, /reviews unknowcommand, /reviews
  */
-export default (): APIGatewayProxyResult =>
-  respond(200, messages.allCommands(commands));
+export default (): APIGatewayProxyResult => ({
+  statusCode: 200,
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(messages.allCommands(commands), null, 2),
+});

@@ -7,11 +7,9 @@ import { APIGatewayProxyResult } from 'aws-lambda';
 /**
  * Local Import
  */
+import { IActionParams } from '../types';
 import * as messages from '../messages/subscribe';
-
-// Helpers
 import { getRepositoryData } from '../utils/github';
-import { respond } from '../utils/lambda';
 
 /*
  * Init
@@ -22,14 +20,20 @@ const dynamoDb = new DynamoDB.DocumentClient();
  * Unsubscribe from reviews for a repository.
  * Usage: /reviews unsubscribe organization/repository
  */
-export default async (params: string): Promise<APIGatewayProxyResult> => {
+export default async ({
+  params,
+}: IActionParams): Promise<APIGatewayProxyResult> => {
   // Params
   const repository = params.trim();
   const isEmpty = repository === '';
 
   try {
     if (isEmpty) {
-      return respond(200, messages.emptyRessource());
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(messages.emptyRessource(), null, 2),
+      };
     }
 
     // Verify if the repository exist on GitHub and get repository data
@@ -43,13 +47,22 @@ export default async (params: string): Promise<APIGatewayProxyResult> => {
       })
       .promise();
 
-    return respond(200, messages.unsubscribed(repository));
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(messages.unsubscribed(repository), null, 2),
+    };
   } catch (error) {
     // Repository doesn’t exist in database
-
     // Ressource not found
     if (error.status === 404) {
-      return respond(200, messages.notFound(repository));
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(messages.notFound(repository), null, 2),
+      };
     }
+
+    throw new Error(error);
   }
 };

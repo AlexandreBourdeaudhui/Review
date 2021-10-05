@@ -8,7 +8,6 @@ import { APIGatewayProxyResult } from 'aws-lambda';
  * Local Import
  */
 import * as messages from '../messages/list';
-import { respond } from '../utils/lambda';
 
 /*
  * Init
@@ -25,7 +24,11 @@ export default async (): Promise<APIGatewayProxyResult> => {
       .scan({ TableName: process.env.DYNAMODB_TABLE })
       .promise();
 
-    return respond(200, messages.repositoryList(Items));
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(messages.repositoryList(Items), null, 2),
+    };
   } catch (error) {
     throw new Error(error);
   }

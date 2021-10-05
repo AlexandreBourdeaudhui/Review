@@ -12,10 +12,9 @@ import * as messages from '../messages/reviews';
 // Helpers
 import { getAvailableReviews } from '../utils/github';
 import { postMessage } from '../utils/slack';
-import { respond } from '../utils/lambda';
 
 // Types
-import { Repositories, SlashCommand } from '../types';
+import { IActionParams, Repositories, SlashCommand } from '../types';
 
 /*
  * Init
@@ -53,7 +52,11 @@ const verifyPullRequests = ({
             postMessage({
               channel: payload.channel_id,
               thread_ts: data.message.ts,
-              text: messages.pullRequestReview(availableReview),
+              blocks: JSON.stringify(
+                messages.pullRequestReview(availableReview),
+                null,
+                2,
+              ),
             }),
           ),
         );
@@ -65,23 +68,32 @@ const verifyPullRequests = ({
  * Show pull-requests that need review.
  * Usage: /reviews day
  */
-export default async (
-  payload: SlashCommand,
-): Promise<APIGatewayProxyResult> => {
+export default async ({
+  payload,
+}: IActionParams): Promise<APIGatewayProxyResult> => {
   try {
     const { Items: repositories } = await dynamoDb
       .scan({ TableName: process.env.DYNAMODB_TABLE })
       .promise();
 
     // Verify if we have a pull-requets that need to be reviewed
-    await Promise.all(verifyPullRequests({ payload, repositories }));
+    await Promise.all(
+      verifyPullRequests({
+        payload,
+        repositories,
+      }),
+    );
 
-    // @TODO : Slack has a 3000ms timeout, so if we don't respond within that
-    // window, and the Slack user who interacted with the app will see an error
-    // message (timeout), see the following link.
-    // https://api.slack.com/interactivity/handling#message_responses
-    return respond(200, messages.noMoreReviews());
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(messages.noMoreReviews(), null, 2),
+    };
   } catch (error) {
     throw new Error(error);
   }
 };
+
+// @TODO : Slack has a 3000ms timeout, so if we don't respond within that
+// window, and the Slack user who interacted with the app will see an error
+// message (timeout), see the following link. https://api.slack.com/interactivity/handling#message_responses
