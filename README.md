@@ -27,10 +27,10 @@ A serverless [Slack Slash Commands](https://api.slack.com/slash-commands) to get
 - Install to Workspace
 - Click on `OAuth & Permissions`, view and copy the token (`xoxb-XXXX`) to a temporary place. You'll need it later.
 
-### Deploy
+#### Deploy
 
 - Create an `.env` file and fill it with the properties of the` .env.example` file.
-- `serverless deploy --stage prod`
+- `serverless deploy --stage prod` (or `serverless deploy` for development purposes, the `serverless` configuration file is based on the `dev` environment by default).
 - Once the deploy is successful, get the `endpoints` and update the `Request URL` of the Slash `/reviews` Command.
 
 ## Available commands
