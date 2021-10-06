@@ -1,0 +1,19 @@
+actor Georges
+
+participant Slack
+participant AWS
+participant GitHub
+participant Database
+
+Georges->Slack: Type "/reviews day" on Slack
+Slack-->AWS: Slack send a payload to the request URL
+AWS->AWS: Parse the payload
+AWS<->Database: Get all active repositories subscriptions
+activate AWS
+AWS<-->GitHub: Get all pull-requests from a GitHub repository
+AWS<-->GitHub: Get if the pull-requests X that need to be reviewed
+deactivate AWS
+Slack<--AWS: For each repository with pull-requests to review, send message
+activate AWS
+Slack<--AWS: Send all the pull-requests to review, in thread
+deactivate AWS
