@@ -1,11 +1,11 @@
-actor Georges
+actor Léon
 
 participant Slack
 participant AWS
 participant GitHub
 participant Database
 
-Georges->Slack: Type "/reviews day" on Slack
+Léon->Slack: Write "/reviews day" on Slack
 Slack-->AWS: Slack send a payload to the request URL
 AWS->AWS: Parse the payload
 AWS<->Database: Get all active repositories subscriptions
