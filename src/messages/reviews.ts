@@ -23,7 +23,7 @@ export const pullRequestReview = ({
     type: 'section',
     text: {
       type: 'mrkdwn',
-      text: `:new: New pull request !\n *[#${number}] <${html_url}|${title}>*`,
+      text: `:new: New pull request !\n [#${number}] *<${html_url}|${title}>*`,
     },
   },
   // {
