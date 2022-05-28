@@ -1,19 +1,26 @@
 /**
  * Local Import
  */
-import { PullRequest, ResponseSlack, SlackBlocks } from '../types';
+import type { PullRequest } from '../types/github';
+import type { ResponseSlack, SlackBlocks } from '../types/slack';
 
 /**
- * Code
+ * Message • Available reviews for the following repository
  */
 export const followedRepository = (repository: string): string =>
   `Available reviews for the following repository <https://github.com/${repository}|${repository}> :arrow_heading_down:`;
 
+/**
+ * Message • No more reviews available 
+ */
 export const noMoreReviews = (): ResponseSlack => ({
   response_type: 'in_channel',
   text: ':robot_face: I don’t see any other reviews requests at this time.',
 });
 
+/**
+ * Message • New pull-request that can be reviewed
+ */
 export const pullRequestReview = ({
   number,
   html_url,

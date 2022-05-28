@@ -2,14 +2,16 @@
  * Package Import
  */
 import { DynamoDB } from 'aws-sdk';
-import { APIGatewayProxyResult } from 'aws-lambda';
+import type { APIGatewayProxyResult } from 'aws-lambda';
 
 /**
  * Local Import
  */
-import { IActionParams } from '../types';
 import * as messages from '../messages/subscribe';
 import { getRepositoryData } from '../utils/github';
+
+// Types
+import type { IActionParams } from '../types';
 
 /*
  * Init

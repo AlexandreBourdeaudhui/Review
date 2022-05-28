@@ -6,13 +6,13 @@ import { Octokit } from '@octokit/core';
 /*
  * Local Import
  */
-import {
+import { GITHUB_REPO_REGEX, PULL_REQUEST_STATE } from '../constants/github';
+import type {
   PullRequestData,
   PullRequestParams,
   RepositoryData,
   ReviewsParams,
-} from '../types';
-import { GITHUB_REPO_REGEX, PULL_REQUEST_STATE } from '../constants/github';
+} from '../types/github';
 
 /**
  * Init

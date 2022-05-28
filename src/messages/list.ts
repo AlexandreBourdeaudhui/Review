@@ -1,10 +1,12 @@
 /**
  * Local Import
  */
-import { Repositories, ResponseSlack } from '../types';
+import type { Repositories } from '../types/github';
+import type { ResponseSlack } from '../types/slack';
 
 /**
- * Code
+ * Message • List of subscribed repositories that can 
+ * be scanned to know if their pull-request can be reviewed
  */
 export const repositoryList = (
   repositories: Repositories[],

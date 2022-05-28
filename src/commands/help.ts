@@ -1,7 +1,7 @@
 /**
  * Package Import
  */
-import { APIGatewayProxyResult } from 'aws-lambda';
+import type { APIGatewayProxyResult } from 'aws-lambda';
 
 /**
  * Local Import

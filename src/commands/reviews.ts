@@ -2,7 +2,7 @@
  * Package Import
  */
 import { DynamoDB } from 'aws-sdk';
-import { APIGatewayProxyResult } from 'aws-lambda';
+import type { APIGatewayProxyResult } from 'aws-lambda';
 
 /*
  * Local Import
@@ -14,7 +14,9 @@ import { getAvailableReviews } from '../utils/github';
 import { postMessage } from '../utils/slack';
 
 // Types
-import { IActionParams, Repositories, SlashCommand } from '../types';
+import type { IActionParams } from '../types';
+import type { Repositories } from '../types/github';
+import type { SlashCommand } from '../types/slack';
 
 /*
  * Init

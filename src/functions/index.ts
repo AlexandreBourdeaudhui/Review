@@ -2,13 +2,13 @@
  * Package Import
  */
 import queryString from 'querystring';
-import { Handler } from 'aws-lambda';
+import type { Handler } from 'aws-lambda';
 
 /*
  * Local Import
  */
-import { SlashCommand } from '../types';
 import { getAction, getCommand } from '../utils/command';
+import type { SlashCommand } from '../types/slack';
 
 /**
  * Serverless function handler

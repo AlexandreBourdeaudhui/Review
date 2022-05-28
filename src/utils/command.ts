@@ -1,7 +1,7 @@
 /**
  * Package Import
  */
-import { APIGatewayProxyResult } from 'aws-lambda';
+import type { APIGatewayProxyResult } from 'aws-lambda';
 
 /**
  * Local Import
@@ -17,7 +17,7 @@ import subscribe from '../commands/subscribe';
 import unsubscribe from '../commands/unsubscribe';
 
 // Types
-import { SlashCommand } from '../types';
+import type { SlashCommand } from '../types/slack';
 
 /**
  * Get the action linked to the subcommand

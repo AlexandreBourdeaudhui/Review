@@ -6,7 +6,7 @@ import axios, { AxiosResponse } from 'axios';
 /**
  * Local Import
  */
-import { ParamsSlack } from '../types';
+import type { ParamsSlack } from '../types/slack';
 
 /**
  * Wrapper call API Slack
@@ -16,7 +16,9 @@ export const api = (
   params: ParamsSlack,
 ): Promise<AxiosResponse> =>
   axios.get(`https://slack.com/api/${request}`, {
-    headers: { Authorization: `Bearer ${process.env.TOKEN_SLACK}` },
+    headers: {
+      Authorization: `Bearer ${process.env.TOKEN_SLACK}`,
+    },
     params,
   });
 

@@ -2,7 +2,7 @@
  * Package Import
  */
 import { DynamoDB } from 'aws-sdk';
-import { APIGatewayProxyResult } from 'aws-lambda';
+import type { APIGatewayProxyResult } from 'aws-lambda';
 
 /**
  * Local Import

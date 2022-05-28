@@ -1,10 +1,10 @@
 /**
  * Local Import
  */
-import { Commands, ResponseSlack } from '../types';
+import type { Commands, ResponseSlack } from '../types/slack';
 
 /**
- * Code
+ * Message • Display a help message with the available commands
  */
 export const allCommands = (commands: Commands[]): ResponseSlack => ({
   response_type: 'ephemeral',
